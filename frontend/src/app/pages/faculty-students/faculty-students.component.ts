@@ -1,0 +1,462 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { ApiService } from '../../core/services/api.service';
+import { AuthService } from '../../core/services/auth.service';
+
+const DEPARTMENTS = [
+  'Computer Science', 'Information Technology', 'Electronics & Communication',
+  'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering',
+  'Data Science', 'Artificial Intelligence', 'Biotechnology', 'Other'
+];
+
+const ACADEMIC_YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+@Component({
+  selector: 'app-faculty-students',
+  standalone: true,
+  imports: [CommonModule, FormsModule, SidebarComponent],
+  template: `
+    <app-sidebar role="faculty"></app-sidebar>
+    <div class="main-layout fade-in">
+
+      <header class="page-header">
+        <div>
+          <h1>My Students</h1>
+          <p>Add and manage students assigned to you</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-chip">
+            <span class="stat-num">{{ students.length }}</span>
+            <span class="stat-lbl">Students</span>
+          </div>
+          <div class="stat-chip dept-chip" *ngIf="uniqueDepts > 0">
+            <span class="stat-num">{{ uniqueDepts }}</span>
+            <span class="stat-lbl">Departments</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Add Student Form -->
+      <div class="form-card">
+        <h3 class="form-title">
+          <span *ngIf="!isEditing">+ Add New Student</span>
+          <span *ngIf="isEditing">Edit Student Details</span>
+        </h3>
+        
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label>Assigned Faculty</label>
+            <input [value]="facultyName" disabled class="glass-input readonly-field">
+          </div>
+          <div class="form-group">
+            <label>Full Name <span class="req">*</span></label>
+            <input [(ngModel)]="form.name" class="glass-input" placeholder="e.g. Alice Johnson">
+          </div>
+          <div class="form-group">
+            <label>Email Address <span class="req">*</span></label>
+            <input [(ngModel)]="form.email" type="email" class="glass-input" placeholder="student@university.edu" [class.highlight-input]="isEditing">
+          </div>
+          <div class="form-group">
+            <label>{{ isEditing ? 'New Password' : 'Password' }} <span class="req" *ngIf="!isEditing">*</span></label>
+            <input [(ngModel)]="form.password" type="password" class="glass-input" [placeholder]="isEditing ? 'Leave blank to keep current' : 'Set login password'">
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <select [(ngModel)]="form.department" class="glass-input glass-select">
+              <option value="">Select Department</option>
+              <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Academic Year</label>
+            <select [(ngModel)]="form.academicYear" class="glass-input glass-select">
+              <option value="">Select Year</option>
+              <option *ngFor="let y of academicYears" [value]="y">{{ y }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Subjects / Courses</label>
+            <div class="subject-selection">
+               <div *ngIf="availableSubjects.length === 0" class="no-subjs">No subjects created yet. Go to Dashboard > Subjects to add some.</div>
+               <div *ngFor="let s of availableSubjects" class="checkbox-item">
+                 <input type="checkbox" [id]="'subj-' + s.id" [checked]="isSubjectSelected(s.name)" (change)="toggleSubject(s.name)">
+                 <label [for]="'subj-' + s.id">{{ s.name }} <small class="text-muted">({{ s.semester }})</small></label>
+               </div>
+            </div>
+            <!-- Fallback for manual entry if needed, or just display selected count -->
+            <div class="selected-summary" *ngIf="form.subjects.length > 0">
+              Selected: {{ form.subjects.join(', ') }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <span class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</span>
+          
+          <button (click)="addStudent()" class="btn-primary" [disabled]="isAdding" *ngIf="!isEditing">
+            {{ isAdding ? 'Adding...' : 'Add Student' }}
+          </button>
+          
+          <div class="edit-actions" *ngIf="isEditing">
+             <button (click)="addStudent()" class="btn-primary" [disabled]="isAdding">
+               {{ isAdding ? 'Updating...' : 'Save Changes' }}
+             </button>
+             <button (click)="cancelEdit()" class="btn-outline">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-row">
+        <div class="search-wrapper">
+           <span class="search-icon">🔍</span>
+           <input [(ngModel)]="searchTerm" class="search-input" placeholder="Search by name, department or subject...">
+        </div>
+        <span class="results-count">{{ filteredStudents.length }} result(s)</span>
+      </div>
+
+      <!-- Students List -->
+      <div *ngIf="isLoading" class="loading-state">Loading students...</div>
+
+      <div *ngIf="!isLoading && filteredStudents.length === 0" class="empty-state">
+        <div class="empty-icon">🎓</div>
+        <h3>No students yet</h3>
+        <p>Use the form above to add your first student.</p>
+      </div>
+
+      <div class="students-grid" *ngIf="!isLoading && filteredStudents.length > 0">
+        <div *ngFor="let s of filteredStudents" class="student-card">
+          <div class="card-top">
+            <div class="avatar">{{ s.name.charAt(0).toUpperCase() }}</div>
+            <div class="student-info">
+              <h4>{{ s.name }}</h4>
+              <span class="username">{{ s.email }}</span>
+            </div>
+            <div class="card-menu">
+              <button (click)="editStudent(s)" class="btn-icon" title="Edit">✏️</button>
+              <button (click)="removeStudent(s)" class="btn-icon delete" title="Remove">🗑️</button>
+            </div>
+          </div>
+          
+          <div class="info-row" *ngIf="s.department || s.academicYear">
+             <div class="info-item" *ngIf="s.department">
+               <span class="label">Dept</span>
+               <span class="val">{{ s.department }}</span>
+             </div>
+             <div class="info-item" *ngIf="s.academicYear">
+               <span class="label">Year</span>
+               <span class="val">{{ s.academicYear }}</span>
+             </div>
+          </div>
+          
+          <div class="tags" *ngIf="s.subject">
+             <span class="tag subj-tag">📚 {{ s.subject }}</span>
+          </div>
+
+          <div class="card-footer">
+             <span class="email-badge">{{ s.email }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
+    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
+
+    /* Header */
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+    h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; letter-spacing: -0.5px; }
+    .page-header p { color: #64748b; margin: 0; font-size: 1rem; }
+    
+    .header-stats { display: flex; gap: 1rem; }
+    .stat-chip { 
+      text-align: center; padding: 0.5rem 1rem; background: white;
+      border: 1px solid #e2e8f0; border-radius: 8px; 
+      min-width: 100px;
+    }
+    .stat-num { display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
+    .stat-lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+
+    /* Form Card */
+    .form-card { 
+      padding: 2.5rem; margin-bottom: 2rem; 
+      background: white; border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .form-title { margin: 0 0 1.5rem; color: var(--primary); font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: #334155; font-size: 0.9rem; font-weight: 500; }
+    .req { color: #ef4444; }
+    
+    .glass-input { 
+      width: 100%; padding: 0.75rem 1rem; background: #fff;
+      border: 1px solid #cbd5e1; border-radius: 6px;
+      color: #1e293b; font-size: 0.95rem; box-sizing: border-box; 
+      transition: all 0.2s;
+    }
+    .glass-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    .glass-input::placeholder { color: #94a3b8; }
+    .glass-select { background-image: none; cursor: pointer; }
+    
+    .readonly-field { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
+    .full-width { grid-column: 1 / -1; }
+
+    .form-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
+    
+    .btn-primary { 
+      padding: 0.75rem 2rem; background: var(--primary);
+      color: white; border: none; border-radius: 6px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    .btn-outline {
+      padding: 0.75rem 1.5rem; background: white; border: 1px solid #cbd5e1;
+      color: #475569; border-radius: 6px; cursor: pointer; font-weight: 500;
+    }
+    .btn-outline:hover { background: #f1f5f9; color: #0f172a; }
+
+    .error-msg { color: #ef4444; font-size: 0.9rem; background: #fef2f2; padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid #fecaca; }
+
+    /* Search */
+    .search-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; gap: 1rem; }
+    .search-wrapper { 
+      flex: 1; position: relative; max-width: 500px; 
+    }
+    .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: #94a3b8; }
+    .search-input { 
+      width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; 
+      background: white; border: 1px solid #e2e8f0; border-radius: 8px;
+      color: #1e293b; font-size: 0.95rem; 
+    }
+    .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    .results-count { color: #64748b; font-size: 0.9rem; }
+
+    /* Grid */
+    .students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+
+    .student-card { 
+      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .student-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-color: #cbd5e1; }
+
+    .card-top { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+    .avatar { 
+      width: 48px; height: 48px; border-radius: 10px;
+      background: #eff6ff; color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.2rem; flex-shrink: 0; 
+    }
+    .student-info { flex: 1; overflow: hidden; }
+    .student-info h4 { margin: 0 0 0.2rem; font-size: 1rem; color: #1e293b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .username { font-size: 0.85rem; color: #64748b; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .card-menu { display: flex; gap: 0.25rem; }
+    .btn-icon { 
+      background: transparent; border: none; color: #94a3b8; 
+      width: 28px; height: 28px; border-radius: 4px; cursor: pointer; 
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .btn-icon:hover { background: #f1f5f9; color: var(--primary); }
+    .btn-icon.delete:hover { background: #fef2f2; color: #ef4444; }
+
+    .info-row { 
+      display: flex; gap: 1rem; margin-bottom: 1rem; 
+      background: #f8fafc; padding: 0.75rem; border-radius: 8px; border: 1px solid #f1f5f9;
+    }
+    .info-item { display: flex; flex-direction: column; }
+    .info-item .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+    .info-item .val { font-size: 0.85rem; color: #334155; font-weight: 500; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .tag { padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; }
+    .subj-tag { background: rgba(16,185,129,0.2); color: #059669; }
+    .no-tag { background: rgba(255,255,255,0.05); color: #64748b; font-style: italic; }
+
+    .card-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9; }
+    .email-badge { 
+      display: inline-block; font-size: 0.8rem; color: #64748b; 
+      background: #f1f5f9; padding: 0.25rem 0.6rem; border-radius: 4px;
+      font-family: monospace; 
+    }
+
+    .empty-state { text-align: center; padding: 4rem; color: #64748b; }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+    .empty-state h3 { color: #1e293b; margin-bottom: 0.5rem; }
+    .loading-state { text-align: center; padding: 3rem; color: #64748b; }
+
+    /* Checkboxes */
+    .subject-selection { 
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; 
+      max-height: 150px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.5rem; background: #fff;
+    }
+    .checkbox-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+    .checkbox-item input { margin: 0; }
+    .no-subjs { font-size: 0.85rem; color: #94a3b8; font-style: italic; padding: 0.5rem; }
+    .text-muted { color: #94a3b8; font-size: 0.8rem; }
+    .selected-summary { font-size: 0.8rem; color: var(--primary); margin-top: 0.4rem; font-weight: 500; }
+  `]
+})
+export class FacultyStudentsComponent implements OnInit {
+  availableSubjects: any[] = [];
+
+  students: any[] = [];
+  searchTerm = '';
+  isLoading = false;
+  isAdding = false;
+  errorMsg = '';
+  departments = DEPARTMENTS;
+  academicYears = ACADEMIC_YEARS;
+
+  form = { name: '', email: '', password: '', department: '', subjects: [] as string[], academicYear: '' };
+  isEditing = false;
+  editingId: number | null = null;
+
+  private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+
+  get facultyId(): number { return this.authService.currentUser()?.id; }
+
+  get uniqueDepts(): number {
+    return new Set(this.students.map(s => s.department).filter(Boolean)).size;
+  }
+
+  get filteredStudents(): any[] {
+    if (!this.searchTerm.trim()) return this.students;
+    const q = this.searchTerm.toLowerCase();
+    return this.students.filter(s =>
+      s.name?.toLowerCase().includes(q) ||
+      s.department?.toLowerCase().includes(q) ||
+      s.subject?.toLowerCase().includes(q) ||
+      s.email?.toLowerCase().includes(q)
+    );
+  }
+
+  get facultyName(): string { return this.authService.currentUser()?.name || 'Unknown Faculty'; }
+
+  ngOnInit() {
+    this.loadStudents();
+    this.loadAvailableSubjects();
+  }
+
+  loadAvailableSubjects() {
+    if (this.facultyId) {
+      this.apiService.getSubjects(undefined, undefined, this.facultyId).subscribe({
+        next: (data) => { this.availableSubjects = data; },
+        error: () => { }
+      });
+    }
+  }
+
+  loadStudents() {
+    this.isLoading = true;
+    this.apiService.getFacultyStudents(this.facultyId).subscribe({
+      next: (data) => { this.students = data; this.isLoading = false; },
+      error: () => { this.isLoading = false; }
+    });
+  }
+
+  toggleSubject(subjName: string) {
+    const index = this.form.subjects.indexOf(subjName);
+    if (index > -1) {
+      this.form.subjects.splice(index, 1);
+    } else {
+      this.form.subjects.push(subjName);
+    }
+  }
+
+  isSubjectSelected(subjName: string): boolean {
+    return this.form.subjects.includes(subjName);
+  }
+
+  addStudent() {
+    this.errorMsg = '';
+
+    const payload = {
+      ...this.form,
+      subject: this.form.subjects.join(', ') // Convert array to comma string for backend
+    };
+
+    if (this.isEditing && this.editingId) {
+      if (!this.form.name || !this.form.email) {
+        this.errorMsg = 'Name and email are required.';
+        return;
+      }
+      this.isAdding = true;
+      this.apiService.updateProfile(this.editingId, payload).subscribe({
+        next: (updatedStudent) => {
+          // Update local list
+          const index = this.students.findIndex(s => s.id === this.editingId);
+          if (index !== -1) {
+            // Merge updated properties
+            this.students[index] = { ...this.students[index], ...updatedStudent };
+          }
+          this.cancelEdit();
+          this.isAdding = false;
+        },
+        error: (err) => {
+          this.errorMsg = err.error?.message || 'Failed to update student.';
+          this.isAdding = false;
+        }
+      });
+      return;
+    }
+
+    // Add Logic
+    if (!this.form.name || !this.form.email || !this.form.password) {
+      this.errorMsg = 'Name, email and password are required.';
+      return;
+    }
+    this.isAdding = true;
+    this.apiService.addFacultyStudent(this.facultyId, payload).subscribe({
+      next: (student) => {
+        this.students = [student, ...this.students];
+        this.form = { name: '', email: '', password: '', department: '', subjects: [], academicYear: '' };
+        this.isAdding = false;
+      },
+      error: (err: any) => {
+        this.errorMsg = err?.error?.message || 'Failed to add student.';
+        this.isAdding = false;
+      }
+    });
+  }
+
+  editStudent(s: any) {
+    this.isEditing = true;
+    this.editingId = s.id;
+    this.form = {
+      name: s.name,
+      email: s.email,
+      department: s.department || '',
+      subjects: s.subject ? s.subject.split(', ') : [],
+      academicYear: s.academicYear || '',
+      password: '' // Blank for security, unless changing
+    };
+    // Scroll to form
+    const formEl = document.querySelector('.form-card');
+    if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  cancelEdit() {
+    this.isEditing = false;
+    this.editingId = null;
+    this.form = { name: '', email: '', password: '', department: '', subjects: [], academicYear: '' };
+    this.errorMsg = '';
+  }
+
+  removeStudent(s: any) {
+    if (!confirm(`Remove ${s.name} from your list? They can still log in.`)) return;
+    this.apiService.removeFacultyStudent(s.id).subscribe({
+      next: () => { this.students = this.students.filter(x => x.id !== s.id); },
+      error: () => { alert('Failed to remove.'); }
+    });
+  }
+}

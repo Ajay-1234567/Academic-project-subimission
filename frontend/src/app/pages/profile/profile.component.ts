@@ -1,0 +1,150 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { ApiService } from '../../core/services/api.service';
+
+@Component({
+  selector: 'app-profile',
+  standalone: true,
+  imports: [CommonModule, FormsModule, SidebarComponent],
+  template: `
+    <app-sidebar [role]="user?.role || 'student'"></app-sidebar>
+    <div class="main-layout fade-in">
+      <h2>My Profile</h2>
+      <div class="glass-panel profile-card">
+        <div class="header-bg"></div>
+        <div class="avatar-lg">{{ user?.name?.charAt(0)?.toUpperCase() }}</div>
+        
+        <div class="info-grid" *ngIf="!isEditing">
+          <div class="field">
+            <label>Full Name</label>
+            <div class="value">{{ user?.name || 'Unknown' }}</div>
+          </div>
+          <div class="field">
+            <label>Role</label>
+            <div class="value badge">{{ user?.role | titlecase }}</div>
+          </div>
+          <div class="field">
+            <label>Email / Login</label>
+            <div class="value">{{ user?.email }}</div>
+          </div>
+          <div class="field" *ngIf="user?.department">
+             <label>Department</label>
+             <div class="value">{{ user?.department }}</div>
+          </div>
+
+        </div>
+
+        <div class="edit-form" *ngIf="isEditing">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input [(ngModel)]="editData.name" class="glass-input">
+            </div>
+            <div class="form-group">
+                <label>New Password (optional)</label>
+                <input [(ngModel)]="editData.password" type="password" class="glass-input" placeholder="Leave blank to keep current">
+            </div>
+        </div>
+        
+        <div class="actions">
+          <button *ngIf="!isEditing" (click)="startEdit()" class="btn-primary">Edit Profile</button>
+          <button *ngIf="isEditing" (click)="saveProfile()" class="btn-primary">Save Changes</button>
+          <button *ngIf="isEditing" (click)="cancelEdit()" class="btn-outline">Cancel</button>    
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .main-layout { margin-left: 250px; padding: 2rem; max-width: 1000px; }
+    h2 { margin-bottom: 1.5rem; }
+    .profile-card { overflow: hidden; position: relative; padding-bottom: 2rem; }
+    .header-bg { height: 120px; background: linear-gradient(to right, var(--primary), var(--secondary)); opacity: 0.8; }
+    .avatar-lg {
+      width: 100px; height: 100px;
+      background: #1e293b;
+      border: 4px solid #1e293b;
+      border-radius: 50%;
+      position: absolute;
+      top: 60px; left: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; font-weight: bold;
+    }
+    .info-grid, .edit-form {
+      margin-top: 60px; padding: 0 2rem;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+    }
+    .field label { display: block; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.25rem; }
+    .value { font-size: 1.1rem; font-weight: 500; }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; background: rgba(99, 102, 241, 0.2); color: #818cf8; border-radius: 99px; font-size: 0.9rem; }
+    .faculty-highlight { color: #fcd34d; font-weight: 700; }
+    
+    .actions { padding: 2rem 2rem 0; display: flex; gap: 1rem; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); }
+
+    .glass-input { width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; }
+    .btn-primary { padding: 0.75rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  `]
+})
+export class ProfileComponent implements OnInit {
+  user: any;
+  facultyName = '';
+  isEditing = false;
+  editData = { name: '', password: '' };
+
+  private apiService = inject(ApiService);
+  private authService = inject(AuthService); // Renamed for consistency
+
+  constructor() {
+    this.user = this.authService.getUser();
+  }
+
+  ngOnInit() {
+    this.refreshProfile();
+  }
+
+  refreshProfile() {
+    if (!this.user?.id) return;
+
+    // Fetch fresh profile data
+    this.apiService.getUserById(this.user.id).subscribe({
+      next: (data) => {
+        this.user = data;
+        this.authService.updateUser(data); // Sync local storage
+
+        // Faculty name fetching removed as per request
+      },
+      error: () => { }
+    });
+  }
+
+  startEdit() {
+    this.editData = { name: this.user.name, password: '' };
+    this.isEditing = true;
+  }
+
+  cancelEdit() {
+    this.isEditing = false;
+  }
+
+  saveProfile() {
+    if (!this.editData.name) return;
+
+    this.apiService.updateProfile(this.user.id, this.editData).subscribe({
+      next: (updatedUser) => {
+        // updatedUser might strictly be the result of UPDATE, which depends on backend.
+        // Backend returns: SELECT id, username, name, role FROM users ...
+        // We should merge it or refresh.
+        this.refreshProfile();
+        this.isEditing = false;
+        alert('Profile updated successfully');
+      },
+      error: (err) => {
+        console.error('Failed to update profile', err);
+        alert('Failed to update profile');
+      }
+    });
+  }
+}
