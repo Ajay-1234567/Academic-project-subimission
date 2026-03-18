@@ -9,6 +9,6 @@
     "mysql2": "^3.17.2"
   },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build -- --output-path=../dist && cd .. && cp -r dist/browser/* . && rm -rf dist"
+    "build": "cd frontend && npm install && npm run build && cd .. && (cp -r frontend/dist/frontend/browser/. . 2>/dev/null || cp -r frontend/dist/frontend/. . 2>/dev/null || true)"
   }
 }
