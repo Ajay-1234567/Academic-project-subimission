@@ -1,5 +1,5 @@
 {
-  "name": "academic-portal-final",
+  "name": "academic-portal-unified",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -9,6 +9,6 @@
     "mysql2": "^3.17.2"
   },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cd .. && (cp -rv frontend/dist/frontend/browser/. . || cp -rv frontend/dist/frontend/. . || true)"
+    "build": "cd frontend && npm install && npm run build && cd .. && cp -r frontend/dist/frontend/browser/. . 2>/dev/null || true"
   }
 }
