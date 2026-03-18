@@ -253,7 +253,7 @@ if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
 module.exports = app;
 
 // Auth Route
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const [rows] = await pool.query(
@@ -273,7 +273,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Register with email
-app.post('/api/register', async (req, res) => {
+app.post('/register', async (req, res) => {
     const { email, password, role, name, department, branch, academicYear, domain, section } = req.body;
     if (!email || !password || !name) {
         return res.status(400).json({ message: 'Name, email and password are required.' });
@@ -295,7 +295,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 // Public Stats Route
-app.get('/api/stats', async (req, res) => {
+app.get('/stats', async (req, res) => {
     try {
         const [[{ students }]] = await pool.query(`SELECT COUNT(*) as students FROM users WHERE role = 'student'`);
         const [[{ faculty }]] = await pool.query(`SELECT COUNT(*) as faculty FROM users WHERE role = 'faculty'`);
@@ -309,10 +309,10 @@ app.get('/api/stats', async (req, res) => {
 });
 
 // Projects Routes
-app.get('/api/projects', async (req, res) => {
+app.get('/projects', async (req, res) => {
     const { role, userId } = req.query;
     try {
-        console.log('Incoming /api/projects request:', { role, userId });
+        console.log('Incoming /projects request:', { role, userId });
 
         let query = `
             SELECT p.*, u.name as studentName, u.email as studentEmail, u.rollNumber as studentRollNumber,
@@ -344,7 +344,7 @@ app.get('/api/projects', async (req, res) => {
 });
 
 // Get projects for a group
-app.get('/api/projects/group/:groupId', async (req, res) => {
+app.get('/projects/group/:groupId', async (req, res) => {
     const { groupId } = req.params;
     try {
         const [rows] = await pool.query(`
@@ -361,7 +361,7 @@ app.get('/api/projects/group/:groupId', async (req, res) => {
     }
 });
 
-app.post('/api/projects', async (req, res) => {
+app.post('/projects', async (req, res) => {
     const { title, abstract, repoUrl, studentId, semester, subject, projectType, groupId, submitterName } = req.body;
     try {
         const [result] = await pool.query(
@@ -381,7 +381,7 @@ app.post('/api/projects', async (req, res) => {
     }
 });
 
-app.get('/api/projects/:id', async (req, res) => {
+app.get('/projects/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const [rows] = await pool.query(`
@@ -426,7 +426,7 @@ app.get('/api/projects/:id', async (req, res) => {
 });
 
 // Evaluations Routes
-app.post('/api/evaluate', async (req, res) => {
+app.post('/evaluate', async (req, res) => {
     const { projectId, comments, score, facultyId } = req.body;
     try {
         await pool.query(
@@ -447,7 +447,7 @@ app.post('/api/evaluate', async (req, res) => {
 });
 
 // Users Routes
-app.get('/api/users', async (req, res) => {
+app.get('/users', async (req, res) => {
     const { role } = req.query;
     try {
         let query = '';
@@ -482,7 +482,7 @@ app.get('/api/users', async (req, res) => {
 });
 
 
-app.delete('/api/users/:id', async (req, res) => {
+app.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const [user] = await pool.query('SELECT role FROM users WHERE id = ?', [id]);
@@ -513,7 +513,7 @@ app.delete('/api/users/:id', async (req, res) => {
     }
 });
 
-app.get('/api/users/:id', async (req, res) => {
+app.get('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const [users] = await pool.query('SELECT id, name, email, role, department, subject, assignedFacultyId, academicYear, rollNumber, branch, section, domain FROM users WHERE id = ?', [id]);
@@ -546,7 +546,7 @@ app.get('/api/users/:id', async (req, res) => {
     }
 });
 
-app.put('/api/users/:id', async (req, res) => {
+app.put('/users/:id', async (req, res) => {
     const { id } = req.params;
     const { name, password, email, department, subject, rollNumber, branch, section, domain } = req.body;
     try {
@@ -607,7 +607,7 @@ app.put('/api/users/:id', async (req, res) => {
 });
 
 // Update Project
-app.put('/api/projects/:id', async (req, res) => {
+app.put('/projects/:id', async (req, res) => {
     const { id } = req.params;
     const { title, abstract, repoUrl } = req.body;
     try {
@@ -627,7 +627,7 @@ app.put('/api/projects/:id', async (req, res) => {
 });
 
 // Delete Project
-app.delete('/api/projects/:id', async (req, res) => {
+app.delete('/projects/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const [existing] = await pool.query('SELECT score FROM projects WHERE id = ?', [id]);
@@ -643,7 +643,7 @@ app.delete('/api/projects/:id', async (req, res) => {
 });
 
 // ---- ANNOUNCEMENTS / DEADLINES ----
-app.get('/api/announcements', async (req, res) => {
+app.get('/announcements', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM announcements ORDER BY createdAt DESC');
         res.json(rows);
@@ -652,7 +652,7 @@ app.get('/api/announcements', async (req, res) => {
     }
 });
 
-app.post('/api/announcements', async (req, res) => {
+app.post('/announcements', async (req, res) => {
     const { title, message, deadline, facultyId, facultyName } = req.body;
     if (!title || !message) {
         return res.status(400).json({ message: 'Title and message are required.' });
@@ -669,7 +669,7 @@ app.post('/api/announcements', async (req, res) => {
     }
 });
 
-app.delete('/api/announcements/:id', async (req, res) => {
+app.delete('/announcements/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM announcements WHERE id = ?', [id]);
@@ -680,7 +680,7 @@ app.delete('/api/announcements/:id', async (req, res) => {
 });
 
 // ---- SUBJECTS MANAGEMENT ----
-app.get('/api/subjects', async (req, res) => {
+app.get('/subjects', async (req, res) => {
     const { department, semester, facultyId, branch, domain } = req.query;
     try {
         let query = `
@@ -703,7 +703,7 @@ app.get('/api/subjects', async (req, res) => {
     }
 });
 
-app.post('/api/subjects', async (req, res) => {
+app.post('/subjects', async (req, res) => {
     const { name, department, semester, facultyId, branch, domain } = req.body;
     if (!name || !semester) return res.status(400).json({ message: 'Name and Semester required' });
     try {
@@ -717,7 +717,7 @@ app.post('/api/subjects', async (req, res) => {
     }
 });
 
-app.delete('/api/subjects/:id', async (req, res) => {
+app.delete('/subjects/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query('DELETE FROM subjects WHERE id = ?', [id]);
@@ -728,7 +728,7 @@ app.delete('/api/subjects/:id', async (req, res) => {
 // ---- FACULTY STUDENT MANAGEMENT ----
 
 // Get all students assigned to faculty — including submission status
-app.get('/api/faculty/:facultyId/students', async (req, res) => {
+app.get('/faculty/:facultyId/students', async (req, res) => {
     const { facultyId } = req.params;
     try {
         // Get students assigned to this faculty
@@ -772,7 +772,7 @@ app.get('/api/faculty/:facultyId/students', async (req, res) => {
 });
 
 // Add a new student and assign to faculty
-app.post('/api/faculty/:facultyId/students', async (req, res) => {
+app.post('/faculty/:facultyId/students', async (req, res) => {
     const { facultyId } = req.params;
     const { name, email, password, department, subject, academicYear, rollNumber, branch, section, domain } = req.body;
 
@@ -842,7 +842,7 @@ app.post('/api/faculty/:facultyId/students', async (req, res) => {
     }
 });
 
-app.delete('/api/faculty/:facultyId/students/:studentId', async (req, res) => {
+app.delete('/faculty/:facultyId/students/:studentId', async (req, res) => {
     const { facultyId, studentId } = req.params;
     try {
         await pool.query('DELETE FROM student_faculty WHERE studentId = ? AND facultyId = ?', [studentId, facultyId]);
@@ -855,7 +855,7 @@ app.delete('/api/faculty/:facultyId/students/:studentId', async (req, res) => {
 // ---- GROUP MANAGEMENT ----
 
 // Get groups for a faculty
-app.get('/api/faculty/:facultyId/groups', async (req, res) => {
+app.get('/faculty/:facultyId/groups', async (req, res) => {
     const { facultyId } = req.params;
     try {
         const [groups] = await pool.query(
@@ -896,7 +896,7 @@ app.get('/api/faculty/:facultyId/groups', async (req, res) => {
 });
 
 // Create a new group
-app.post('/api/faculty/:facultyId/groups', async (req, res) => {
+app.post('/faculty/:facultyId/groups', async (req, res) => {
     const { facultyId } = req.params;
     const { groupNumber, groupName, memberIds } = req.body;
 
@@ -954,7 +954,7 @@ app.post('/api/faculty/:facultyId/groups', async (req, res) => {
 });
 
 // Update group (add/remove members)
-app.put('/api/faculty/:facultyId/groups/:groupId', async (req, res) => {
+app.put('/faculty/:facultyId/groups/:groupId', async (req, res) => {
     const { facultyId, groupId } = req.params;
     const { groupName, memberIds } = req.body;
 
@@ -998,7 +998,7 @@ app.put('/api/faculty/:facultyId/groups/:groupId', async (req, res) => {
 });
 
 // Delete a group
-app.delete('/api/faculty/:facultyId/groups/:groupId', async (req, res) => {
+app.delete('/faculty/:facultyId/groups/:groupId', async (req, res) => {
     const { facultyId, groupId } = req.params;
     try {
         await pool.query('DELETE FROM student_groups WHERE id = ? AND facultyId = ?', [groupId, facultyId]);
@@ -1009,7 +1009,7 @@ app.delete('/api/faculty/:facultyId/groups/:groupId', async (req, res) => {
 });
 
 // ---- ADMIN: Faculty + their students ----
-app.get('/api/admin/faculty-students', async (req, res) => {
+app.get('/admin/faculty-students', async (req, res) => {
     try {
         // Get all faculty
         const [faculties] = await pool.query(
@@ -1066,7 +1066,7 @@ app.get('/api/admin/faculty-students', async (req, res) => {
 });
 
 // Get student's group info
-app.get('/api/students/:studentId/group', async (req, res) => {
+app.get('/students/:studentId/group', async (req, res) => {
     const { studentId } = req.params;
     try {
         const [groups] = await pool.query(`
@@ -1106,7 +1106,7 @@ app.get('/api/students/:studentId/group', async (req, res) => {
 });
 
 // ---- SECTIONS MANAGEMENT ----
-app.get('/api/sections', async (req, res) => {
+app.get('/sections', async (req, res) => {
     const { department, graduationYear, branch, domain } = req.query;
     try {
         let query = 'SELECT * FROM sections WHERE 1=1';
@@ -1124,7 +1124,7 @@ app.get('/api/sections', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.post('/api/sections', async (req, res) => {
+app.post('/sections', async (req, res) => {
     const { id, name, graduationYear, department, branches, domain } = req.body;
     try {
         if (id) {
@@ -1143,7 +1143,7 @@ app.post('/api/sections', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/sections/:id', async (req, res) => {
+app.delete('/sections/:id', async (req, res) => {
     console.log(`ATTEMPTING TO DELETE SECTION ID: ${req.params.id}`);
     try {
         const [result] = await pool.query('DELETE FROM sections WHERE id = ?', [req.params.id]);
@@ -1159,7 +1159,7 @@ app.delete('/api/sections/:id', async (req, res) => {
 });
 
 // Problem Statements (Real-world projects)
-app.get('/api/problem-statements', async (req, res) => {
+app.get('/problem-statements', async (req, res) => {
     const { facultyId, branch } = req.query;
     try {
         let query = `
@@ -1186,7 +1186,7 @@ app.get('/api/problem-statements', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.post('/api/problem-statements', async (req, res) => {
+app.post('/problem-statements', async (req, res) => {
     const { title, description, branch, domain, difficulty, createdBy, assignedToFacultyId } = req.body;
     try {
         const [result] = await pool.query(
@@ -1197,7 +1197,7 @@ app.post('/api/problem-statements', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/problem-statements/:id', async (req, res) => {
+app.delete('/problem-statements/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM problem_statements WHERE id = ?', [req.params.id]);
         res.json({ message: 'Problem statement deleted' });
@@ -1205,6 +1205,6 @@ app.delete('/api/problem-statements/:id', async (req, res) => {
 });
 
 // Legacy remove student route
-app.delete('/api/faculty/students/:studentId', async (req, res) => {
-    res.status(400).json({ message: "Use the specific route DELETE /api/faculty/:facultyId/students/:studentId" });
+app.delete('/faculty/students/:studentId', async (req, res) => {
+    res.status(400).json({ message: "Use the specific route DELETE /faculty/:facultyId/students/:studentId" });
 });
