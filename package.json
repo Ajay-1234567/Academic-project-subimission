@@ -1,9 +1,14 @@
 {
-  "name": "academic-portal-root",
+  "name": "academic-portal-unified",
   "version": "1.0.0",
   "private": true,
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mysql2": "^3.17.2"
+  },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
-    "install": "cd backend && npm install"
+    "build": "cd frontend && npm install && npm run build -- --output-path=../dist && cd .. && cp -r dist/browser/* . && rm -rf dist"
   }
 }
