@@ -5,6 +5,17 @@ import { ApiService } from '../../core/services/api.service';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { ActivatedRoute } from '@angular/router';
 
+const BRANCH_DATA = [
+  {
+    name: 'Computer Science (CSE)',
+    domains: [
+      'Core', 'Cyber Security', 'Data Science', 'AI & ML', 'IoT',
+      'Cloud Computing', 'Software Engineering', 'Block Chain Technology',
+      'Networking', 'VLSI', 'CSW', 'ST'
+    ]
+  }
+];
+
 @Component({
   selector: 'app-user-management',
   standalone: true,
@@ -45,6 +56,24 @@ import { ActivatedRoute } from '@angular/router';
               <label>{{ isEditing ? 'New Password' : 'Password' }} <span class="hint">{{ isEditing ? '(leave blank to keep current)' : '(initial login password)' }}</span></label>
               <input [(ngModel)]="newUser.password" name="password" type="text" class="glass-input" [placeholder]="isEditing ? 'Enter new password if changing' : 'Set initial password'" [required]="!isEditing">
             </div>
+            <div class="form-group" *ngIf="role === 'student'">
+              <label>Branch</label>
+              <select [(ngModel)]="newUser.branch" name="branch" class="glass-input">
+                <option value="">Select Branch</option>
+                <option *ngFor="let b of branchList" [value]="b.name">{{ b.name }}</option>
+              </select>
+            </div>
+            <div class="form-group" *ngIf="role === 'student' && showDomainSelector()">
+              <label>Domain / Specialization</label>
+              <select [(ngModel)]="newUser.domain" name="domain" class="glass-input">
+                <option value="">Select Domain</option>
+                <option *ngFor="let d of getDomainsForBranch()" [value]="d">{{ d }}</option>
+              </select>
+            </div>
+            <div class="form-group" *ngIf="role === 'student'">
+              <label>Section</label>
+              <input [(ngModel)]="newUser.section" name="section" class="glass-input" placeholder="e.g. Section A">
+            </div>
             <button type="submit" class="btn-primary w-full mt-4" [disabled]="isSubmitting">
               {{ isSubmitting ? 'Processing...' : (isEditing ? 'Update ' : 'Add ') + (role | titlecase) }}
             </button>
@@ -64,6 +93,8 @@ import { ActivatedRoute } from '@angular/router';
                 <tr>
                   <th>Name</th>
                   <th>Login Email</th>
+                  <th *ngIf="role === 'student'">Branch / Section</th>
+                  <th *ngIf="role === 'student'">Assigned Faculty</th>
                   <th>Password</th>
                   <th>Actions</th>
                 </tr>
@@ -77,7 +108,21 @@ import { ActivatedRoute } from '@angular/router';
                     </div>
                   </td>
                   <td class="email-cell">{{ user.email || user.username }}</td>
+                  <td *ngIf="role === 'student'">
+                    <div class="branch-section-box">
+                      <span class="badge b-blue" *ngIf="user.branch">{{ user.branch }}</span>
+                      <span class="badge b-purple" *ngIf="user.section">{{ user.section }}</span>
+                      <span class="badge b-cyan" *ngIf="user.domain">{{ user.domain }}</span>
+                    </div>
+                  </td>
+                  <td *ngIf="role === 'student'">
+                    <div class="assigned-faculty">
+                      <span class="faculty-tag" *ngIf="user.addedByFaculty">{{ user.addedByFaculty }}</span>
+                      <span class="no-faculty" *ngIf="!user.addedByFaculty">Not Assigned</span>
+                    </div>
+                  </td>
                   <td class="password-cell">{{ user.password }}</td>
+
                   <td>
                     <div class="action-buttons">
                       <button class="btn-icon btn-edit" (click)="editUser(user)" title="Edit">✏️</button>
@@ -187,12 +232,24 @@ import { ActivatedRoute } from '@angular/router';
     .error-msg { color: #ef4444; font-size: 0.9rem; }
     .text-center { text-align: center; color: var(--text-secondary); padding: 2rem; }
     .loading { text-align: center; padding: 2rem; color: var(--text-secondary); }
+
+    .branch-section-box { display: flex; flex-direction: column; gap: 4px; }
+    .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; width: fit-content; }
+    .b-blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .b-purple { background: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .b-cyan { background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+    
+    .assigned-faculty { display: flex; flex-wrap: wrap; gap: 4px; }
+    .faculty-tag { background: #f0f9ff; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; border: 1px solid #bae6fd; }
+    .no-faculty { color: #94a3b8; font-style: italic; font-size: 0.8rem; }
   `]
+
 })
 export class UserManagementComponent implements OnInit {
   role: string = 'student';
   users: any[] = [];
-  newUser = { name: '', email: '', password: '' };
+  branchList = BRANCH_DATA;
+  newUser = { name: '', email: '', password: '', branch: '', section: '', domain: '' };
   isLoading = false;
   isSubmitting = false;
   errorMessage = '';
@@ -257,7 +314,7 @@ export class UserManagementComponent implements OnInit {
       next: (user) => {
         this.users.unshift(user);
         this.successInfo = { name: savedName, email: savedEmail, password: savedPassword };
-        this.newUser = { name: '', email: '', password: '' };
+        this.newUser = { name: '', email: '', password: '', branch: '', section: '', domain: '' };
         this.isSubmitting = false;
       },
       error: (err) => {
@@ -274,27 +331,34 @@ export class UserManagementComponent implements OnInit {
     this.newUser = {
       name: user.name,
       email: user.email || user.username || '',
-      password: '' // Don't show existing password (hashed)
+      password: '',
+      branch: user.branch || '',
+      section: user.section || '',
+      domain: user.domain || ''
     };
   }
 
   cancelEdit() {
     this.isEditing = false;
     this.editingUserId = null;
-    this.newUser = { name: '', email: '', password: '' };
+    this.newUser = { name: '', email: '', password: '', branch: '', section: '', domain: '' };
     this.errorMessage = '';
   }
 
   deleteUser(id: number) {
     if (!confirm('Are you sure you want to delete this user?')) return;
-
     this.apiService.deleteUser(id).subscribe({
-      next: () => {
-        this.users = this.users.filter(u => u.id !== id);
-      },
-      error: () => {
-        alert('Failed to delete user.');
-      }
+      next: () => { this.users = this.users.filter(u => u.id !== id); },
+      error: (err) => { this.errorMessage = 'Failed to delete user'; }
     });
+  }
+
+  showDomainSelector(): boolean {
+    return this.newUser.branch === 'Computer Science (CSE)';
+  }
+
+  getDomainsForBranch(): string[] {
+    const b = this.branchList.find((x: any) => x.name === this.newUser.branch);
+    return b ? b.domains : [];
   }
 }

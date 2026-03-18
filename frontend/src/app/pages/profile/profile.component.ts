@@ -84,7 +84,9 @@ import { ApiService } from '../../core/services/api.service';
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 10px 20px; border-radius: 6px; cursor: pointer; }
     .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-    .glass-input { width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; }
+    .glass-input { width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; color: var(--text-primary, #1e293b); font-size: 1rem; }
+    .glass-input::placeholder { color: rgba(0,0,0,0.35); }
+    .glass-input:focus { outline: none; border-color: var(--primary, #6366f1); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
     .btn-primary { padding: 0.75rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
   `]
 })

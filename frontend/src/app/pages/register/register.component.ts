@@ -81,6 +81,31 @@ import { Router, RouterLink } from '@angular/router';
               <label>Password</label>
               <input type="password" [(ngModel)]="password" name="password" class="field" placeholder="Min. 6 characters" required minlength="6">
             </div>
+            
+            <!-- Student Specific Fields -->
+            <div *ngIf="role === 'student'" class="fade-in">
+              <div class="form-group">
+                <label>Branch</label>
+                <select [(ngModel)]="branch" name="branch" class="field" required>
+                  <option value="">Select Branch</option>
+                  <option *ngFor="let b of branchList" [value]="b.name">{{ b.name }}</option>
+                </select>
+              </div>
+              <div class="form-group" *ngIf="showDomainDropdown()">
+                <label>Domain / Specialization</label>
+                <select [(ngModel)]="domain" name="domain" class="field">
+                  <option value="">Select Domain (Optional)</option>
+                  <option *ngFor="let d of getDomainsForBranch()" [value]="d">{{ d }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Academic Year</label>
+                <select [(ngModel)]="academicYear" name="academicYear" class="field" required>
+                  <option value="">Select Year</option>
+                  <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+                </select>
+              </div>
+            </div>
 
             <div *ngIf="errorMessage" class="error-alert">
               <span>⚠️</span>
@@ -240,9 +265,35 @@ export class RegisterComponent {
   email = '';
   password = '';
   role = 'student';
+
+  // Student fields
+  branch = '';
+  domain = '';
+  academicYear = '';
+  branchList = [
+    {
+      name: 'Computer Science (CSE)',
+      domains: [
+        'Core', 'Cyber Security', 'Data Science', 'AI & ML', 'IoT',
+        'Cloud Computing', 'Software Engineering', 'Block Chain Technology',
+        'Networking', 'VLSI', 'CSW', 'ST'
+      ]
+    }
+  ];
+  years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
   isLoading = false;
   errorMessage = '';
   isAlreadyRegistered = false;
+
+  showDomainDropdown(): boolean {
+    return this.branch === 'Computer Science (CSE)';
+  }
+
+  getDomainsForBranch(): string[] {
+    const b = this.branchList.find(x => x.name === this.branch);
+    return b ? b.domains : [];
+  }
 
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
@@ -252,7 +303,16 @@ export class RegisterComponent {
     this.errorMessage = '';
     this.isAlreadyRegistered = false;
 
-    const userData = { email: this.email, password: this.password, role: this.role, name: this.name };
+    const userData: any = {
+      email: this.email,
+      password: this.password,
+      role: this.role,
+      name: this.name,
+      department: this.role === 'student' ? 'B.Tech' : null,
+      branch: this.role === 'student' ? this.branch : null,
+      domain: this.role === 'student' ? this.domain : null,
+      academicYear: this.role === 'student' ? this.academicYear : null
+    };
 
     this.apiService.register(userData).subscribe({
       next: (user) => {

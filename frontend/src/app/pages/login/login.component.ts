@@ -216,16 +216,16 @@ export class LoginComponent {
 
     this.apiService.login({ email: this.email, password: this.password }).subscribe({
       next: (user) => {
-        if (user.role !== this.role) {
-          this.errorMessage = `Please login with a ${this.role} account.`;
-          this.isLoading = false;
-          return;
-        }
+        // Automatically login the user with their ACTUAL role from database
         this.authService.login(user);
         this.isLoading = false;
       },
-      error: () => {
-        this.errorMessage = 'Invalid email or password. Please try again.';
+      error: (err) => {
+        if (err.status === 0) {
+           this.errorMessage = 'Cannot connect to server. Please ensure the backend is running.';
+        } else {
+           this.errorMessage = 'Invalid email or password. Please try again.';
+        }
         this.isLoading = false;
       }
     });

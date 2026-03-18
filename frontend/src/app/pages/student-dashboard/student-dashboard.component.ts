@@ -20,7 +20,12 @@ import { forkJoin } from 'rxjs';
           <p>Manage your project submissions</p>
           <div class="faculty-pill" *ngIf="assignedFaculties.length > 0">
             <span class="label">Assigned Faculty:</span>
-            <span class="value" *ngFor="let f of assignedFaculties; let last = last">{{ f.name }}{{ !last ? ', ' : '' }}</span>
+            <div class="faculty-list">
+              <div class="fac-item" *ngFor="let f of assignedFaculties">
+                <span class="fac-name">{{ f.name }}</span>
+                <span class="fac-subj" *ngIf="f.subject">({{ f.subject }})</span>
+              </div>
+            </div>
           </div>
         </div>
         <!-- Notification Bell -->
@@ -29,6 +34,34 @@ import { forkJoin } from 'rxjs';
           <span class="bell-badge">{{ activeAnnouncements.length }}</span>
         </a>
       </header>
+
+      <!-- Group Info Banner -->
+      <div class="group-info-banner" *ngIf="groupInfo">
+        <div class="gib-header">
+          <div class="gib-icon">👥</div>
+          <div class="gib-title">
+            <strong>Group {{ groupInfo.groupNumber }}<span *ngIf="groupInfo.groupName"> — {{ groupInfo.groupName }}</span></strong>
+            <span class="gib-sub">You are part of this group. Group project submissions are shared with all members.</span>
+          </div>
+        </div>
+        <div class="gib-members">
+          <span *ngFor="let m of groupInfo.members" class="gib-member"
+                [class.gib-me]="m.id === currentUser?.id">
+            <span class="gib-avatar">{{ m.name.charAt(0) }}</span>
+            {{ m.name }}{{ m.id === currentUser?.id ? ' (You)' : '' }}
+          </span>
+        </div>
+        <div class="gib-projects" *ngIf="groupInfo.projects && groupInfo.projects.length > 0">
+          <div class="gib-proj-label">📋 Group Project Submissions</div>
+          <div *ngFor="let p of groupInfo.projects" class="gib-project-row">
+            <a [routerLink]="['/projects', p.id]" class="gib-project-link">{{ p.submitterStudentName || 'Group' }} — {{ p.title }}</a>
+            <span class="gib-proj-badge" [class.graded]="p.score">{{ p.score ? '✅ Graded: ' + p.score + '/100' : '⏳ Pending' }}</span>
+          </div>
+        </div>
+        <div class="gib-no-proj" *ngIf="!groupInfo.projects || groupInfo.projects.length === 0">
+          No group project submitted yet. <a routerLink="/student/submit" class="gib-submit-link">Submit now →</a>
+        </div>
+      </div>
 
       <!-- Stats Row -->
       <div class="stats-grid">
@@ -71,35 +104,36 @@ import { forkJoin } from 'rxjs';
       <div class="subjects-section">
         <div class="section-header">
            <h3>Available Subjects</h3>
-           <div class="controls">
-             <select [(ngModel)]="selectedSemester" (change)="loadSubjects()" class="glass-input small">
-               <option value="">Select Semester</option>
-               <option *ngFor="let s of semesters" [value]="s">{{ s }}</option>
-             </select>
-           </div>
-        </div>
+            <div class="controls">
+              <select [(ngModel)]="selectedSemester" (change)="loadSubjects()" class="glass-input small">
+                <option value="">Select Semester</option>
+                <option *ngFor="let s of semesters" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+         </div>
 
-        <!-- Subjects Grid -->
-        <div class="subjects-grid" *ngIf="selectedSemester && availableSubjects.length > 0">
-           <div *ngFor="let subj of availableSubjects" class="subject-card" (click)="openSubject(subj)">
-              <div class="subj-icon">📚</div>
-              <h4>{{ subj.name }}</h4>
-              <p class="subj-meta">{{ subj.department }} • {{ subj.semester }}</p>
-              
-              <!-- Check if submitted -->
-              <div class="subj-status" *ngIf="isSubmitted(subj.name)">
-                ✅ Submitted
-              </div>
-           </div>
-        </div>
+         <!-- Subjects Grid -->
+         <div class="subjects-grid" *ngIf="selectedSemester && availableSubjects.length > 0">
+            <div *ngFor="let subj of availableSubjects" class="subject-card" (click)="openSubject(subj)">
+               <div class="subj-icon">📚</div>
+               <h4>{{ subj.name }}</h4>
+               <p class="subj-meta">{{ subj.department }} • {{ subj.semester }}</p>
+               <div class="subj-faculty">by {{ getFacultyName(subj.facultyId) }}</div>
+               
+               <!-- Check if submitted -->
+               <div class="subj-status" *ngIf="isSubmitted(subj.name)">
+                 ✅ Submitted
+               </div>
+            </div>
+         </div>
 
-        <div *ngIf="selectedSemester && availableSubjects.length === 0" class="empty-subjects">
-           <p>No subjects found for {{ selectedSemester }} in your department.</p>
-        </div>
+         <div *ngIf="selectedSemester && availableSubjects.length === 0" class="empty-subjects">
+            <p>No subjects found for {{ selectedSemester }} in your curriculum.</p>
+         </div>
 
-        <div *ngIf="!selectedSemester" class="empty-subjects">
-           <p>Please select a semester to view available subjects.</p>
-        </div>
+         <div *ngIf="!selectedSemester" class="empty-subjects">
+            <p>Please select a semester to see the relevant subjects.</p>
+         </div>
       </div>
 
       <!-- Submission List -->
@@ -159,12 +193,15 @@ import { forkJoin } from 'rxjs';
     .mt-5 { margin-top: 3rem; }
     
     .faculty-pill {
-      display: inline-flex; align-items: center; gap: 0.5rem;
+      display: inline-flex; align-items: flex-start; gap: 0.75rem;
       background: white; border: 1px solid #e2e8f0;
-      padding: 0.4rem 1rem; border-radius: 99px; margin-top: 0.8rem;
+      padding: 0.6rem 1.25rem; border-radius: 12px; margin-top: 0.8rem;
     }
-    .faculty-pill .label { color: #64748b; font-size: 0.85rem; }
-    .faculty-pill .value { color: var(--primary); font-weight: 600; font-size: 0.9rem; }
+    .faculty-pill .label { color: #64748b; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+    .faculty-list { display: flex; flex-direction: column; gap: 0.25rem; }
+    .fac-item { display: flex; align-items: center; gap: 0.4rem; }
+    .fac-name { color: var(--primary); font-weight: 700; font-size: 0.92rem; }
+    .fac-subj { color: #64748b; font-size: 0.85rem; font-weight: 500; font-style: italic; }
 
     /* Stats Grid */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
@@ -194,15 +231,16 @@ import { forkJoin } from 'rxjs';
     .subject-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-color: var(--primary); }
     
     .subj-icon { font-size: 2rem; margin-bottom: 0.5rem; background: #eff6ff; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
-    .subject-card h4 { margin: 0.5rem 0; font-size: 1.1rem; color: #1e293b; font-weight: 600; }
+    .subject-card h4 { margin: 0.5rem 0 0.2rem; font-size: 1.1rem; color: #1e293b; font-weight: 600; }
     .subj-meta { color: #64748b; font-size: 0.85rem; margin: 0; }
+    .subj-faculty { color: var(--primary); font-size: 0.75rem; font-weight: 600; font-style: italic; margin-top: 0.5rem; }
     
     .subj-status { 
       position: absolute; top: 0.5rem; right: 0.5rem; 
       font-size: 0.75rem; background: #ecfdf5; color: #059669; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; 
     }
     
-    .empty-subjects { background: white; padding: 2rem; text-align: center; border-radius: 12px; border: 1px dashed #cbd5e1; color: #64748b; margin-top: 1rem; }
+    .empty-subjects { background: white; padding: 3rem; text-align: center; border-radius: 12px; border: 1px dashed #cbd5e1; color: #64748b; margin-top: 1rem; }
 
     /* Submission List */
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
@@ -263,6 +301,26 @@ import { forkJoin } from 'rxjs';
     .banner-close { background: transparent; border: none; color: #9a3412; cursor: pointer; font-size: 1rem; }
     
     .sem-badge { font-size: 0.75rem; background: #f1f5f9; color: #475569; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; border: 1px solid #cbd5e1; }
+
+    /* Group Info Banner */
+    .group-info-banner { background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border: 1px solid #6ee7b7; border-radius: 14px; padding: 1.5rem; margin-bottom: 2rem; }
+    .gib-header { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem; }
+    .gib-icon { font-size: 1.75rem; }
+    .gib-title strong { display: block; font-size: 1rem; font-weight: 700; color: #065f46; }
+    .gib-sub { font-size: 0.82rem; color: #059669; margin-top: 0.2rem; display: block; }
+    .gib-members { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .gib-member { display: inline-flex; align-items: center; gap: 0.4rem; background: white; border: 1px solid #a7f3d0; border-radius: 99px; padding: 0.3rem 0.75rem; font-size: 0.82rem; color: #065f46; font-weight: 500; }
+    .gib-member.gib-me { background: #d1fae5; border-color: #6ee7b7; font-weight: 700; }
+    .gib-avatar { width: 20px; height: 20px; border-radius: 50%; background: #6ee7b7; color: #065f46; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.65rem; }
+    .gib-proj-label { font-size: 0.78rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 0.5rem; }
+    .gib-project-row { display: flex; justify-content: space-between; align-items: center; background: white; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; }
+    .gib-project-link { font-size: 0.88rem; color: #059669; font-weight: 500; text-decoration: none; }
+    .gib-project-link:hover { text-decoration: underline; }
+    .gib-proj-badge { font-size: 0.78rem; color: #64748b; }
+    .gib-proj-badge.graded { color: #059669; font-weight: 600; }
+    .gib-no-proj { font-size: 0.88rem; color: #64748b; font-style: italic; }
+    .gib-submit-link { color: #6366f1; font-weight: 600; text-decoration: none; }
+    .gib-submit-link:hover { text-decoration: underline; }
   `]
 })
 export class StudentDashboardComponent implements OnInit {
@@ -272,7 +330,9 @@ export class StudentDashboardComponent implements OnInit {
 
   submissions: any[] = [];
   announcements: any[] = [];
-  subjects: any[] = [];
+  allSubjects: any[] = [];
+  availableSubjects: any[] = [];
+  groupInfo: any = null;
 
   searchTerm = '';
   isLoading = false;
@@ -288,7 +348,11 @@ export class StudentDashboardComponent implements OnInit {
   selectedSemester = '';
   semesters = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
   studentDept = '';
-  assignedFacultyId: number | null = null; // Maintain for legacy if needed
+  studentBranch = '';
+  studentDomain = '';
+  assignedFacultyId: number | null = null;
+
+  get currentUser() { return this.authService.currentUser(); }
 
   get activeAnnouncements() {
     return this.announcements.filter(a => {
@@ -307,9 +371,8 @@ export class StudentDashboardComponent implements OnInit {
     return filtered;
   }
 
-  get availableSubjects() {
-    return this.subjects.filter(s => !this.isSubmitted(s.name));
-  }
+  get FacultyName() { return (id: number) => this.assignedFaculties.find(f => f.id === id)?.name || 'Faculty'; }
+  getFacultyName(id: number) { return this.assignedFaculties.find(f => f.id === id)?.name || 'Faculty'; }
 
   ngOnInit() {
     const user = this.authService.currentUser();
@@ -322,47 +385,78 @@ export class StudentDashboardComponent implements OnInit {
 
       this.apiService.getUserById(user.id).subscribe(u => {
         this.studentDept = u.department;
+        this.studentBranch = u.branch;
+        this.studentDomain = u.domain;
         this.assignedFaculties = u.assignedFaculties || [];
         this.assignedFacultyId = u.assignedFacultyId;
 
         // Refresh subjects now that we have faculty info
-        if (this.selectedSemester) {
-          this.loadSubjects();
-        }
+        this.loadSubjects();
       });
     }
 
     this.loadProjects();
     this.loadAnnouncements();
+    this.loadGroupInfo();
+  }
+
+  loadGroupInfo() {
+    const user = this.authService.currentUser();
+    if (!user) return;
+    this.apiService.getStudentGroup(user.id).subscribe({
+      next: (data) => { this.groupInfo = data; },
+      error: () => { this.groupInfo = null; }
+    });
   }
 
   loadSubjects() {
     if (this.selectedSemester) {
       localStorage.setItem('lastSelectedSemester', this.selectedSemester);
     }
-    if (!this.selectedSemester || !this.studentDept) return;
+
+    if (!this.studentDept) return;
 
     if (this.assignedFaculties.length > 0) {
-      // Fetch subjects for each assigned faculty
+      // Fetch subjects for each assigned faculty — NO semester or department filter
+      // This allows subjects from other depts to show up if they are mapped to this student
       const requests = this.assignedFaculties.map(f =>
-        this.apiService.getSubjects(this.studentDept, this.selectedSemester, f.id)
+        this.apiService.getSubjects(undefined, undefined, f.id)
       );
 
       forkJoin(requests).subscribe({
         next: (results: any[]) => {
-          // Flatten array of arrays
-          const allSubjs = results.flat();
-          // Deduplicate by ID
-          this.subjects = [...new Map(allSubjs.map((item: any) => [item['id'], item])).values()];
+          let merged = results.flat();
+          // Filter by sf.subject string OR branch/domain match
+          merged = merged.filter(s => {
+            const facMapping = this.assignedFaculties.find(f => f.id === s.facultyId);
+            const rawMapping = facMapping?.subject || '';
+            const mappedSubjs = rawMapping.split(',').map((x: string) => x.trim().toLowerCase());
+
+            const isExplicitlyMapped = mappedSubjs.includes(s.name.trim().toLowerCase());
+            const isDomainMatch = s.branch === this.studentBranch && (s.domain === this.studentDomain || !s.domain);
+
+            return isExplicitlyMapped || isDomainMatch;
+          });
+
+          this.allSubjects = [...new Map(merged.map((item: any) => [item['id'], item])).values()];
+          this.applyLocalFilter();
         },
         error: (err) => console.error(err)
       });
     } else {
-      // Fallback: If no assigned faculties, should we fetch nothing? 
-      // Or general departmental subjects? 
-      // Current logic implies 'My Faculty's Subjects', so empty is correct.
-      this.subjects = [];
+      this.allSubjects = [];
+      this.availableSubjects = [];
     }
+  }
+
+  applyLocalFilter() {
+    // 1. Filter by selected semester (if any)
+    let filtered = this.allSubjects;
+    if (this.selectedSemester) {
+      filtered = filtered.filter(s => s.semester === this.selectedSemester);
+    }
+    // 2. Hide already submitted subjects
+    this.availableSubjects = filtered.filter(s => !this.isSubmitted(s.name));
   }
 
   loadAnnouncements() {

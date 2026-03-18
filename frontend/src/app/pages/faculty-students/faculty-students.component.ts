@@ -5,13 +5,27 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 
-const DEPARTMENTS = [
-  'Computer Science', 'Information Technology', 'Electronics & Communication',
-  'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering',
-  'Data Science', 'Artificial Intelligence', 'Biotechnology', 'Other'
+const DEPARTMENTS = ['B.Tech'];
+
+const BRANCH_DATA = [
+  {
+    name: 'Computer Science (CSE)',
+    domains: [
+      'Core', 'Cyber Security', 'Data Science', 'AI & ML', 'IoT',
+      'Cloud Computing', 'Software Engineering', 'Block Chain Technology',
+      'Networking', 'VLSI', 'CSW', 'ST'
+    ]
+  }
 ];
 
 const ACADEMIC_YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+
+const GRAD_YEAR_MAP: { [key: string]: string } = {
+  '1st Year': '2029',
+  '2nd Year': '2028',
+  '3rd Year': '2027',
+  '4th Year': '2026'
+};
 
 @Component({
   selector: 'app-faculty-students',
@@ -63,27 +77,46 @@ const ACADEMIC_YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
             <input [(ngModel)]="form.password" type="password" class="glass-input" [placeholder]="isEditing ? 'Leave blank to keep current' : 'Set login password'">
           </div>
           <div class="form-group">
-            <label>Department</label>
-            <select [(ngModel)]="form.department" class="glass-input glass-select">
-              <option value="">Select Department</option>
-              <option *ngFor="let d of departments" [value]="d">{{ d }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Academic Year</label>
-            <select [(ngModel)]="form.academicYear" class="glass-input glass-select">
+            <label>Academic Year <span class="req">*</span></label>
+            <select [(ngModel)]="form.academicYear" (change)="onYearOrBranchChange()" class="glass-input glass-select" required>
               <option value="">Select Year</option>
               <option *ngFor="let y of academicYears" [value]="y">{{ y }}</option>
             </select>
           </div>
           <div class="form-group">
+            <label>Branch <span class="req">*</span></label>
+            <select [(ngModel)]="form.branch" (change)="onYearOrBranchChange()" class="glass-input glass-select" required>
+              <option value="">Select Branch</option>
+              <option *ngFor="let b of branchList" [value]="b.name">{{ b.name }}</option>
+            </select>
+          </div>
+          <div class="form-group" *ngIf="showDomainDropdown()">
+            <label>Domain / Specialization</label>
+            <select [(ngModel)]="form.domain" (change)="onYearOrBranchChange()" class="glass-input glass-select">
+              <option value="">Select Domain</option>
+              <option *ngFor="let d of getDomainsForBranch()" [value]="d">{{ d }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Section <span class="req">*</span></label>
+            <select [(ngModel)]="form.section" class="glass-input glass-select" [disabled]="availableSections.length === 0" required>
+              <option value="">{{ availableSections.length === 0 ? 'No Sections Available' : 'Select Section' }}</option>
+              <option *ngFor="let s of availableSections" [value]="s.name">{{ s.name }}</option>
+            </select>
+            <small class="help-text" *ngIf="availableSections.length === 0 && form.branch">Admin must configure sections for this branch{{ form.domain ? ' and domain' : '' }}.</small>
+          </div>
+          <div class="form-group">
+            <label>Roll Number</label>
+            <input [(ngModel)]="form.rollNumber" class="glass-input" placeholder="e.g. 21CS001">
+          </div>
+          <div class="form-group">
             <label>Subjects / Courses</label>
             <div class="subject-selection">
                <div *ngIf="availableSubjects.length === 0" class="no-subjs">No subjects created yet. Go to Dashboard > Subjects to add some.</div>
-               <div *ngFor="let s of availableSubjects" class="checkbox-item">
-                 <input type="checkbox" [id]="'subj-' + s.id" [checked]="isSubjectSelected(s.name)" (change)="toggleSubject(s.name)">
-                 <label [for]="'subj-' + s.id">{{ s.name }} <small class="text-muted">({{ s.semester }})</small></label>
-               </div>
+                <div *ngFor="let s of availableSubjects" class="checkbox-item">
+                  <input type="checkbox" [id]="'subj-' + s.id" [checked]="isSubjectSelected(s.name)" (change)="toggleSubject(s.name)">
+                  <label [for]="'subj-' + s.id">{{ s.name }} <small class="text-muted">({{ formatSemester(s.semester) }})</small></label>
+                </div>
             </div>
             <!-- Fallback for manual entry if needed, or just display selected count -->
             <div class="selected-summary" *ngIf="form.subjects.length > 0">
@@ -140,10 +173,14 @@ const ACADEMIC_YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
             </div>
           </div>
           
-          <div class="info-row" *ngIf="s.department || s.academicYear">
-             <div class="info-item" *ngIf="s.department">
-               <span class="label">Dept</span>
-               <span class="val">{{ s.department }}</span>
+          <div class="info-row" *ngIf="s.branch || s.section">
+             <div class="info-item" *ngIf="s.branch">
+               <span class="label">Branch</span>
+               <span class="val">{{ s.branch }}</span>
+             </div>
+             <div class="info-item" *ngIf="s.section">
+               <span class="label">Section</span>
+               <span class="val">{{ s.section }}</span>
              </div>
              <div class="info-item" *ngIf="s.academicYear">
                <span class="label">Year</span>
@@ -314,9 +351,11 @@ export class FacultyStudentsComponent implements OnInit {
   isAdding = false;
   errorMsg = '';
   departments = DEPARTMENTS;
+  branchList = BRANCH_DATA;
   academicYears = ACADEMIC_YEARS;
+  availableSections: any[] = [];
 
-  form = { name: '', email: '', password: '', department: '', subjects: [] as string[], academicYear: '' };
+  form = { name: '', email: '', password: '', department: 'B.Tech', branch: '', domain: '', section: '', subjects: [] as string[], academicYear: '', rollNumber: '' };
   isEditing = false;
   editingId: number | null = null;
 
@@ -419,7 +458,7 @@ export class FacultyStudentsComponent implements OnInit {
     this.apiService.addFacultyStudent(this.facultyId, payload).subscribe({
       next: (student) => {
         this.students = [student, ...this.students];
-        this.form = { name: '', email: '', password: '', department: '', subjects: [], academicYear: '' };
+        this.resetForm();
         this.isAdding = false;
       },
       error: (err: any) => {
@@ -429,17 +468,58 @@ export class FacultyStudentsComponent implements OnInit {
     });
   }
 
+  resetForm() {
+    this.form = { name: '', email: '', password: '', department: 'B.Tech', branch: '', domain: '', section: '', subjects: [], academicYear: '', rollNumber: '' };
+    this.availableSections = [];
+  }
+
+  onYearOrBranchChange() {
+    this.form.section = '';
+    this.availableSections = [];
+
+    if (this.form.branch && this.form.academicYear) {
+      const gradYear = GRAD_YEAR_MAP[this.form.academicYear];
+      this.apiService.getSections('B.Tech', gradYear, this.form.branch, this.form.domain).subscribe({
+        next: (data) => this.availableSections = data,
+        error: () => { }
+      });
+    }
+  }
+
+  showDomainDropdown(): boolean {
+    return this.form.branch === 'Computer Science (CSE)';
+  }
+
+  getDomainsForBranch(): string[] {
+    const b = this.branchList.find(x => x.name === this.form.branch);
+    return b ? b.domains : [];
+  }
+
   editStudent(s: any) {
     this.isEditing = true;
     this.editingId = s.id;
     this.form = {
       name: s.name,
       email: s.email,
-      department: s.department || '',
+      department: s.department || 'B.Tech',
+      branch: s.branch || '',
+      domain: s.domain || '',
+      section: s.section || '',
       subjects: s.subject ? s.subject.split(', ') : [],
       academicYear: s.academicYear || '',
-      password: '' // Blank for security, unless changing
+      rollNumber: s.rollNumber || '',
+      password: ''
     };
+
+    // Load sections for the edit mode
+    if (this.form.branch && this.form.academicYear) {
+      const gradYear = GRAD_YEAR_MAP[this.form.academicYear];
+      this.apiService.getSections('B.Tech', gradYear, this.form.branch, this.form.domain).subscribe({
+        next: (data) => this.availableSections = data,
+        error: () => { }
+      });
+    }
+
     // Scroll to form
     const formEl = document.querySelector('.form-card');
     if (formEl) formEl.scrollIntoView({ behavior: 'smooth' });
@@ -448,15 +528,27 @@ export class FacultyStudentsComponent implements OnInit {
   cancelEdit() {
     this.isEditing = false;
     this.editingId = null;
-    this.form = { name: '', email: '', password: '', department: '', subjects: [], academicYear: '' };
+    this.resetForm();
     this.errorMsg = '';
   }
 
   removeStudent(s: any) {
     if (!confirm(`Remove ${s.name} from your list? They can still log in.`)) return;
-    this.apiService.removeFacultyStudent(s.id).subscribe({
+    this.apiService.removeFacultyStudent(this.facultyId, s.id).subscribe({
       next: () => { this.students = this.students.filter(x => x.id !== s.id); },
       error: () => { alert('Failed to remove.'); }
     });
+  }
+
+  formatSemester(sem: string): string {
+    if (!sem || !sem.includes('-')) return sem;
+    const [year] = sem.split('-');
+    const yearLabels: { [key: string]: string } = {
+      '1': '1st Year',
+      '2': '2nd Year',
+      '3': '3rd Year',
+      '4': '4th Year'
+    };
+    return `${yearLabels[year] || year + 'th Year'} - ${sem}`;
   }
 }

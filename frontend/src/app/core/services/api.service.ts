@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class ApiService {
-    private apiUrl = 'http://localhost:3000/api';
+    private apiUrl = 'https://academic-project-subimission.vercel.app/api';
 
     constructor(private http: HttpClient) { }
 
@@ -83,15 +83,17 @@ export class ApiService {
         return this.http.post(`${this.apiUrl}/faculty/${facultyId}/students`, data);
     }
 
-    removeFacultyStudent(studentId: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/faculty/students/${studentId}`);
+    removeFacultyStudent(facultyId: number, studentId: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/faculty/${facultyId}/students/${studentId}`);
     }
 
-    getSubjects(dept?: string, sem?: string, facultyId?: number): Observable<any[]> {
+    getSubjects(dept?: string, sem?: string, facultyId?: number, branch?: string, domain?: string): Observable<any[]> {
         let url = `${this.apiUrl}/subjects?`;
         if (dept) url += `department=${encodeURIComponent(dept)}&`;
         if (sem) url += `semester=${encodeURIComponent(sem)}&`;
-        if (facultyId != null) url += `facultyId=${facultyId}`; // Only append if not null/undefined
+        if (facultyId != null) url += `facultyId=${facultyId}&`;
+        if (branch) url += `branch=${encodeURIComponent(branch)}&`;
+        if (domain) url += `domain=${encodeURIComponent(domain)}&`;
         return this.http.get<any[]>(url);
     }
 
@@ -102,4 +104,69 @@ export class ApiService {
     deleteSubject(id: number): Observable<any> {
         return this.http.delete(`${this.apiUrl}/subjects/${id}`);
     }
+
+    // Group Management
+    getFacultyGroups(facultyId: number): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/faculty/${facultyId}/groups`);
+    }
+
+    createGroup(facultyId: number, data: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/faculty/${facultyId}/groups`, data);
+    }
+
+    updateGroup(facultyId: number, groupId: number, data: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}/faculty/${facultyId}/groups/${groupId}`, data);
+    }
+
+    deleteGroup(facultyId: number, groupId: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/faculty/${facultyId}/groups/${groupId}`);
+    }
+
+    getStudentGroup(studentId: number): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/students/${studentId}/group`);
+    }
+
+    getGroupProjects(groupId: number): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/projects/group/${groupId}`);
+    }
+
+    // Admin: See all faculty + their students
+    getAdminFacultyStudents(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/admin/faculty-students`);
+    }
+
+    // Sections Management
+    getSections(dept?: string, year?: string, branch?: string, domain?: string): Observable<any[]> {
+        let url = `${this.apiUrl}/sections?`;
+        if (dept) url += `department=${encodeURIComponent(dept)}&`;
+        if (year) url += `graduationYear=${encodeURIComponent(year)}&`;
+        if (branch) url += `branch=${encodeURIComponent(branch)}&`;
+        if (domain) url += `domain=${encodeURIComponent(domain)}`;
+        return this.http.get<any[]>(url);
+    }
+
+    saveSection(data: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/sections`, data);
+    }
+
+    deleteSection(id: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/sections/${id}`);
+    }
+
+    // Problem Statements
+    getProblemStatements(facultyId?: number, branch?: string): Observable<any[]> {
+        let url = `${this.apiUrl}/problem-statements?`;
+        if (facultyId) url += `facultyId=${facultyId}&`;
+        if (branch) url += `branch=${encodeURIComponent(branch)}`;
+        return this.http.get<any[]>(url);
+    }
+
+    createProblemStatement(data: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/problem-statements`, data);
+    }
+
+    deleteProblemStatement(id: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/problem-statements/${id}`);
+    }
 }
+

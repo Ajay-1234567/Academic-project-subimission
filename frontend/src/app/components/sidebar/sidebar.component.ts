@@ -39,6 +39,9 @@ import { AuthService } from '../../core/services/auth.service';
           <a routerLink="/faculty/announcements" routerLinkActive="active" class="menu-item">
             <i class="icon">📢</i> Announcements
           </a>
+          <a routerLink="/faculty/groups" routerLinkActive="active" class="menu-item">
+            <i class="icon">👥</i> Groups
+          </a>
         </ng-container>
 
         <!-- Admin Links -->
@@ -52,7 +55,17 @@ import { AuthService } from '../../core/services/auth.service';
           <a routerLink="/admin/faculty" routerLinkActive="active" class="menu-item">
             <i class="icon">👨‍🏫</i> Faculty
           </a>
+          <a routerLink="/admin/faculty-overview" routerLinkActive="active" class="menu-item">
+            <i class="icon">📊</i> Faculty Overview
+          </a>
+          <a routerLink="/admin/sections" routerLinkActive="active" class="menu-item">
+            <i class="icon">🏢</i> Sections
+          </a>
+          <a routerLink="/admin/projects" routerLinkActive="active" class="menu-item">
+            <i class="icon">🌍</i> Projects
+          </a>
         </ng-container>
+
 
         <div class="menu-label mt-4">ACCOUNT</div>
         <a routerLink="/profile" routerLinkActive="active" class="menu-item">
