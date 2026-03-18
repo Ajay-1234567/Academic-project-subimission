@@ -9,6 +9,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => res.send('API is running'));
+
 // Global middleware to await DB connection on serverless environments
 app.use(async (req, res, next) => {
     try {
