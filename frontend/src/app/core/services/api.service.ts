@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
     providedIn: 'root'
 })
 export class ApiService {
-    private apiUrl = 'https://academic-project-subimission.vercel.app/api';
+    private apiUrl = '/api';
 
     constructor(private http: HttpClient) { }
 
