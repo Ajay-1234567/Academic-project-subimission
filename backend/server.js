@@ -9,6 +9,17 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Global middleware to await DB connection on serverless environments
+app.use(async (req, res, next) => {
+    try {
+        await initDB();
+        next();
+    } catch (err) {
+        console.error('DB middleware failed:', err);
+        res.status(500).json({ error: 'Database connection failed' });
+    }
+});
+
 const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 3306,
@@ -232,16 +243,6 @@ async function initDB() {
     })();
     return initPromise;
 }
-
-// Global middleware to await DB connection on serverless environments
-app.use(async (req, res, next) => {
-    try {
-        await initDB();
-        next();
-    } catch (err) {
-        res.status(500).json({ error: 'Database connection failed' });
-    }
-});
 
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     initDB();
