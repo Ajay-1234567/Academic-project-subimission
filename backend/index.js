@@ -34,7 +34,7 @@ app.use(async (req, res, next) => {
 const dbConfig = {
     host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
     port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
-    user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+    user: process.env.MYSQLUSER || process.env.DB_USERNAME || process.env.DB_USER || 'root',
     password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'Root1234',
     waitForConnections: true,
     connectionLimit: 10,
@@ -244,12 +244,6 @@ async function initDB() {
         connection.release();
         console.log('Database initialized successfully.');
 
-        if (!process.env.VERCEL) {
-            app.listen(PORT, () => {
-                console.log(`Server running on port ${PORT}`);
-            });
-        }
-
     } catch (err) {
         console.error('Database initialization failed:', err);
     }
@@ -258,7 +252,13 @@ async function initDB() {
 }
 
 if (!process.env.VERCEL) {
-    initDB();
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+
+    initDB().catch((err) => {
+        console.error('initDB() failed during startup:', err);
+    });
 }
 
 module.exports = app;
@@ -266,6 +266,7 @@ module.exports = app;
 // Auth Route
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log('--- LOGIN ATTEMPT ---', email);
     try {
         const [rows] = await pool.query(
             'SELECT * FROM users WHERE email = ? AND password = ?',
