@@ -1,13 +1,22 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// Handle /api prefix from the frontend
+app.use((req, res, next) => {
+    if (req.url.startsWith('/api')) {
+        req.url = req.url.replace('/api', '');
+    }
+    next();
+});
 
 app.get('/', (req, res) => res.send('API is running'));
 
@@ -23,10 +32,10 @@ app.use(async (req, res, next) => {
 });
 
 const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'Root1234',
+    host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
+    port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
+    user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+    password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'Root1234',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
@@ -36,13 +45,15 @@ const dbConfig = {
     } : undefined
 };
 
+const dbName = process.env.MYSQLDATABASE || process.env.DB_NAME || 'academic_portal';
+
+
 let pool;
 let initPromise = null;
 
 async function initDB() {
     if (initPromise) return initPromise;
     initPromise = (async () => {
-        const dbName = process.env.DB_NAME || 'academic_portal';
     try {
         const tempConnection = await mysql.createConnection({
             host: dbConfig.host,
@@ -233,9 +244,9 @@ async function initDB() {
         connection.release();
         console.log('Database initialized successfully.');
 
-        if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+        if (!process.env.VERCEL) {
             app.listen(PORT, () => {
-                console.log(`Server running on http://localhost:${PORT}`);
+                console.log(`Server running on port ${PORT}`);
             });
         }
 
@@ -246,7 +257,7 @@ async function initDB() {
     return initPromise;
 }
 
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+if (!process.env.VERCEL) {
     initDB();
 }
 
@@ -1208,3 +1219,14 @@ app.delete('/problem-statements/:id', async (req, res) => {
 app.delete('/faculty/students/:studentId', async (req, res) => {
     res.status(400).json({ message: "Use the specific route DELETE /faculty/:facultyId/students/:studentId" });
 });
+
+// ---- SERVE FRONTEND STATIC FILES FOR UNIFIED DEPLOYMENT ----
+const frontendPath = path.join(__dirname, '../frontend/dist/frontend/browser');
+app.use(express.static(frontendPath));
+
+// Catch-all route for Angular SPA
+app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+module.exports = app;
