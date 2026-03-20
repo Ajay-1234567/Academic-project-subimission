@@ -2,7 +2,7 @@
   "name": "academic-project-submission-portal",
   "version": "1.0.0",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "22.12.0"
   },
   "description": "Unified Academic Project Submission Portal",
   "scripts": {
