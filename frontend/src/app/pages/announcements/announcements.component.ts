@@ -215,7 +215,6 @@ export class AnnouncementsComponent implements OnInit {
   templates = [
     { label: '⏰ Submission Deadline', title: 'Final Project Submission', message: 'This is a reminder that the final project submission deadline is approaching. Please ensure all your files and repository links are correctly updated before the cutoff.' },
     { label: '📊 Report Submission', title: 'Project Report Deadline', message: 'Please submit your comprehensive project report as per the template provided. Ensure all team members names and roll numbers are included correctly.' },
-    { label: '🎤 Viva Voce Schedule', title: 'Viva-Voce Presentation Schedule', message: 'The schedule for the project viva-voce has been finalized. Please check your assigned time slots and ensure your presentation is ready.' },
     { label: '✏️ Revision Needed', title: 'Action Required: Project Revisions', message: 'Faculty has reviewed your latest submission. Some corrections are required in your abstract or methodology. Please check the feedback and resubmit soon.' }
   ];
 
