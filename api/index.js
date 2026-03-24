@@ -23,15 +23,18 @@ app.get('/', (req, res) => res.send('API is running'));
 
 // Global middleware to await DB connection on serverless environments
 app.use(async (req, res, next) => {
+    // Health check bypass
+    if (req.path === '/') return next();
+    
     try {
         await initDB();
         next();
     } catch (err) {
-        console.error('DB middleware failed:', err);
+        console.error('CRITICAL DB ERROR:', err);
         res.status(500).json({ 
             error: 'Database connection failed.',
-            details: err.message,
-            code: err.code
+            details: err.message || 'Unknown database error',
+            code: err.code || 'NO_ERR_CODE'
         });
     }
 });
@@ -57,8 +60,9 @@ let pool;
 let initPromise = null;
 
 async function initDB() {
+    if (pool) return; // Pool already created
     if (initPromise) return initPromise;
-    console.log('--- Initializing Database ---');
+    console.log('--- Initializing Database Pool ---');
     initPromise = (async () => {
         try {
             // 1. Try to connect directly to the target database

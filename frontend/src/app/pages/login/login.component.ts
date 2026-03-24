@@ -335,14 +335,18 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         console.error('Login error:', err);
+        const body = err.error || {};
+        
         if (err.status === 0) {
-           this.errorMessage = 'Cannot connect to server. Please ensure the backend is running.';
+          this.errorMessage = 'Cannot connect to server. Ensure backend is running.';
+        } else if (body.details) {
+          // DATABASE ERROR
+          this.errorMessage = `Connection Error: ${body.details} (${body.code || 'FAIL'})`;
         } else if (err.status === 401) {
-           this.errorMessage = 'Invalid email or password. Please try again.';
+          this.errorMessage = 'Invalid email or password.';
         } else {
-           const body = err.error;
-           const rawErr = (typeof body === 'string') ? body : (body?.message || body?.error || JSON.stringify(body));
-           this.errorMessage = (typeof rawErr === 'string') ? rawErr : JSON.stringify(rawErr);
+          const rawErr = (typeof body === 'string') ? body : (body?.message || body?.error || JSON.stringify(body));
+          this.errorMessage = (typeof rawErr === 'string') ? rawErr : JSON.stringify(rawErr);
         }
         this.isLoading = false;
       }
