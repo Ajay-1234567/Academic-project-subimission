@@ -89,7 +89,7 @@ import { AuthService } from '../../core/services/auth.service';
 
             <div class="card-meta">
               <span *ngIf="a.deadline" class="meta-chip deadline">
-                ⏰ Deadline: {{ a.deadline | date:'medium' }}
+                ⏰ Deadline: {{ a.deadline | date:'mediumDate':'UTC' }} (23:59)
               </span>
               <span class="meta-chip date">
                 {{ a.createdAt | date:'mediumDate' }}
