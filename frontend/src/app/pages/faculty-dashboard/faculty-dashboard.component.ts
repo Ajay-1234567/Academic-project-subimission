@@ -593,17 +593,26 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
       .stat-card .value { font-size: 1.5rem; }
       .stat-icon { width: 38px; height: 38px; font-size: 1.3rem; }
 
-      /* Student stats: wrap */
-      .student-stats-row { gap: 0.5rem; flex-wrap: wrap; }
-      .mini-stat { min-width: 80px; padding: 0.6rem 0.75rem; }
-      .ms-num { font-size: 1.3rem; }
+      /* Student stats: one row */
+      .student-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; }
+      .mini-stat { width: auto; min-width: 0; padding: 0.6rem 0.25rem; }
+      .ms-num { font-size: 1.2rem; }
+      .ms-lbl { font-size: 0.62rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-      /* Filter row: stack */
+      /* Filter row: keep tabs in one line */
       .section-header-row { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-      .stu-filter-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; width: 100%; }
+      .stu-filter-row { flex-direction: column; align-items: flex-start; gap: 0.8rem; width: 100%; }
       .branch-select { width: 100%; }
-      .stu-filter-tabs { width: 100%; }
-      .stu-filter-tabs button { flex: 1; font-size: 0.78rem; }
+      .stu-filter-tabs { 
+        width: 100%; display: flex; overflow-x: auto; 
+        scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 2px;
+        background: #e2e8f0; padding: 4px; border-radius: 10px;
+      }
+      .stu-filter-tabs::-webkit-scrollbar { display: none; }
+      .stu-filter-tabs button { 
+        flex: 1; white-space: nowrap; padding: 0.6rem 0.5rem; 
+        font-size: 0.72rem; min-width: fit-content;
+      }
 
       /* Cards: 1 col */
       .grid-submissions { grid-template-columns: 1fr; }
