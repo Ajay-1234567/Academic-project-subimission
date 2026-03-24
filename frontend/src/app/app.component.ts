@@ -26,11 +26,20 @@ export class AppComponent implements OnInit {
   }
 
   private applyGlobalTheme() {
-    const prefs = localStorage.getItem('appPrefs');
-    if (prefs) {
-      const { darkMode, accent } = JSON.parse(prefs);
+    const prefsStr = localStorage.getItem('appPrefs');
+    if (prefsStr) {
+      const { darkMode, accent } = JSON.parse(prefsStr);
       if (darkMode) document.documentElement.classList.add('dark-theme');
-      if (accent) document.documentElement.style.setProperty('--primary', accent);
+      
+      if (accent) {
+        document.documentElement.style.setProperty('--primary', accent);
+        // RGB for translucent backgrounds
+        const rb = parseInt(accent.slice(1, 3), 16);
+        const gb = parseInt(accent.slice(3, 5), 16);
+        const bb = parseInt(accent.slice(5, 7), 16);
+        document.documentElement.style.setProperty('--primary-rgb', `${rb}, ${gb}, ${bb}`);
+        document.documentElement.style.setProperty('--primary-glow', `rgba(${rb}, ${gb}, ${bb}, 0.08)`);
+      }
     }
   }
 }

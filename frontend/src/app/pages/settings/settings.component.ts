@@ -594,6 +594,7 @@ export class SettingsComponent implements OnInit {
   // ─── Toggles ─────────────────────────────────────────────────────────────────
   toggle(key: keyof typeof this.prefs) {
     (this.prefs as any)[key] = !(this.prefs as any)[key];
+    if (key === 'darkMode') this.applyTheme();
   }
 
   toggleNotif(key: keyof typeof this.notifPrefs) {
@@ -616,6 +617,7 @@ export class SettingsComponent implements OnInit {
 
   setAccent(color: string) {
     this.prefs.accent = color;
+    this.applyTheme();
   }
 
   // ─── Save Preferences ────────────────────────────────────────────────────────
@@ -652,7 +654,16 @@ export class SettingsComponent implements OnInit {
     } else {
       document.documentElement.classList.remove('dark-theme');
     }
-    document.documentElement.style.setProperty('--primary', this.prefs.accent);
+    
+    const hex = this.prefs.accent;
+    document.documentElement.style.setProperty('--primary', hex);
+    
+    // Set RGB for translucent backgrounds (e.g. sidebar highlights)
+    const rb = parseInt(hex.slice(1, 3), 16);
+    const gb = parseInt(hex.slice(3, 5), 16);
+    const bb = parseInt(hex.slice(5, 7), 16);
+    document.documentElement.style.setProperty('--primary-rgb', `${rb}, ${gb}, ${bb}`);
+    document.documentElement.style.setProperty('--primary-glow', `rgba(${rb}, ${gb}, ${bb}, 0.08)`);
   }
 
   // ─── Load Preferences ────────────────────────────────────────────────────────

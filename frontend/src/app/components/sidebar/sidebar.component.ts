@@ -130,9 +130,9 @@ import { AuthService } from '../../core/services/auth.service';
       border-right: 1px solid var(--border);
       border-radius: 0;
       z-index: 900;
-      background: #ffffff;
-      box-shadow: 1px 0 15px rgba(0,0,0,0.05); /* Soft shadow */
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--surface);
+      box-shadow: 1px 0 15px rgba(0,0,0,0.1); 
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
     }
     .brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2.5rem; }
     .college-logo { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
@@ -157,8 +157,8 @@ import { AuthService } from '../../core/services/auth.service';
       width: 100%;
       text-align: left;
     }
-    .menu-item:hover { background: rgba(0,0,0,0.04); color: var(--text-primary); }
-    .menu-item.active { background: rgba(79, 70, 229, 0.1); color: var(--primary); font-weight: 600; }
+    .menu-item:hover { background: var(--border); color: var(--text-primary); }
+    .menu-item.active { background: rgba(var(--primary-rgb, 79, 70, 229), 0.1); color: var(--primary); font-weight: 600; }
     .icon { font-style: normal; width: 20px; text-align: center; }
 
     .logout-btn { margin-top: auto; color: #ef4444; }
