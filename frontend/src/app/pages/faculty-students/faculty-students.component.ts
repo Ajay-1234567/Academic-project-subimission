@@ -342,15 +342,21 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     .selected-summary { font-size: 0.8rem; color: var(--primary); margin-top: 0.4rem; font-weight: 500; }
 
     @media (max-width: 1024px) {
-      .main-layout { margin-left: 0; padding: 4.5rem 1rem 2rem; }
-      .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-      h1 { font-size: 1.6rem; }
-      .header-stats { width: 100%; }
-      .stat-chip { flex: 1; padding: 0.6rem; }
+      .main-layout { margin-left: 0; padding: 4.5rem 1.25rem 2rem; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 1.5rem; margin-bottom: 2.5rem; }
+      h1 { font-size: 1.7rem; }
+      p { margin-bottom: 0.5rem; }
+      .header-stats { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .stat-chip { min-width: 0; margin: 0; }
       .form-card { padding: 1.5rem; }
-      .form-grid { grid-template-columns: 1fr; gap: 1rem; }
-      .search-row { flex-direction: column; align-items: flex-start; }
+      .form-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+      .search-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
       .search-wrapper { max-width: 100%; width: 100%; }
+    }
+
+    @media (max-width: 480px) {
+      .header-stats { grid-template-columns: 1fr; }
+      .btn-primary { width: 100%; }
     }
   `]
 })
