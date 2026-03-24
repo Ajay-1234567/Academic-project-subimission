@@ -13,9 +13,13 @@ app.use(bodyParser.json());
 
 // Handle /api prefix from the frontend
 app.use((req, res, next) => {
-    if (req.url.startsWith('/api')) {
-        req.url = req.url.replace('/api', '');
+    console.log(`[REQUEST] ${req.method} ${req.url}`);
+    if (req.url.startsWith('/api/')) {
+        req.url = req.url.substring(4); // Remove '/api'
+    } else if (req.url === '/api') {
+        req.url = '/';
     }
+    console.log(`[ROUTING TO] ${req.url}`);
     next();
 });
 
@@ -105,14 +109,8 @@ async function initDB() {
 
             try {
                 // 3. Fast check: if 'users' table exists, skip the rest
-                const [rows] = await connection.query("SHOW TABLES LIKE 'users'");
-                if (rows.length > 0) {
-                    console.log('Database already initialized. Skipping migrations.');
-                    return;
-                }
-
                 console.log('Running database migrations...');
-                // Create Users Table
+                // 1. Ensure all tables exist
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -133,7 +131,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Projects Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS projects (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -155,7 +152,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Evaluations Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS evaluations (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -169,7 +165,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Announcements Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS announcements (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -183,7 +178,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Subjects Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS subjects (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -198,7 +192,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Student-Faculty mapping table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS student_faculty (
                         studentId INT NOT NULL,
@@ -210,7 +203,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Student Groups Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS student_groups (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -222,7 +214,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Group Members Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS group_members (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -234,7 +225,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Sections Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS sections (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -247,7 +237,6 @@ async function initDB() {
                     )
                 `);
 
-                // Create Problem Statements Table
                 await connection.query(`
                     CREATE TABLE IF NOT EXISTS problem_statements (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -264,7 +253,32 @@ async function initDB() {
                     )
                 `);
 
-                // Insert default admin user if no admin exists
+                // 2. Self-healing: Check for missing columns in existing tables
+                const addColumn = async (table, col, type) => {
+                    try { await connection.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${col}\` ${type}`); } catch (e) { }
+                };
+
+                await addColumn('users', 'emailNotifications', 'BOOLEAN DEFAULT TRUE');
+                await addColumn('users', 'domain', 'VARCHAR(255) DEFAULT NULL');
+                await addColumn('users', 'rollNumber', 'VARCHAR(50) DEFAULT NULL');
+                await addColumn('users', 'branch', 'VARCHAR(255) DEFAULT NULL');
+                await addColumn('users', 'section', 'VARCHAR(255) DEFAULT NULL');
+                await addColumn('users', 'academicYear', 'VARCHAR(20) DEFAULT NULL');
+                await addColumn('users', 'assignedFacultyId', 'INT DEFAULT NULL');
+                await addColumn('users', 'username', 'VARCHAR(255) DEFAULT NULL');
+
+                await addColumn('projects', 'semester', 'VARCHAR(10) DEFAULT NULL');
+                await addColumn('projects', 'subject', 'VARCHAR(255) DEFAULT NULL');
+                await addColumn('projects', 'projectType', "ENUM('solo', 'group') DEFAULT 'solo'");
+                await addColumn('projects', 'groupId', 'INT DEFAULT NULL');
+                await addColumn('projects', 'submitterName', 'VARCHAR(255) DEFAULT NULL');
+
+                await addColumn('subjects', 'branch', 'VARCHAR(255) DEFAULT NULL');
+                await addColumn('subjects', 'domain', 'VARCHAR(255) DEFAULT NULL');
+
+                await addColumn('sections', 'domain', 'VARCHAR(255) DEFAULT NULL');
+
+                // 3. Ensure default admin
                 const [adminCount] = await connection.query(`SELECT COUNT(*) as count FROM users WHERE role = 'admin'`);
                 if (adminCount[0].count === 0) {
                     await connection.query(`
@@ -274,9 +288,9 @@ async function initDB() {
                     console.log('Default admin user created.');
                 }
 
-                console.log('Database initialized successfully.');
+                console.log('Database initialization/sync successful.');
             } finally {
-                connection.release();
+                if (connection) connection.release();
             }
         } catch (err) {
             console.error('Database initialization failed:', err);
@@ -649,8 +663,30 @@ app.get('/users/:id', async (req, res) => {
 
 app.put('/users/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, password, email, department, subject, rollNumber, branch, section, domain } = req.body;
+    const { name, password, email, department, subject, rollNumber, branch, section, domain, oldPassword } = req.body;
+    
+    console.log(`[PUT /users/${id}] Request Body:`, JSON.stringify(req.body));
+
+    if (!id || id === 'undefined' || id === 'null') {
+        console.error('[PUT /users/:id] ERROR: Invalid ID received');
+        return res.status(400).json({ message: 'Session error: Invalid user ID. Please logout and login again.' });
+    }
+
     try {
+        if (password && oldPassword) {
+            console.log(`[PUT /users/${id}] Verifying old password...`);
+            const [userRows] = await pool.query('SELECT password FROM users WHERE id = ?', [id]);
+            if (userRows.length === 0) {
+               console.error(`[PUT /users/${id}] ERROR: User not found in DB`);
+               return res.status(404).json({ message: 'User account not found.' });
+            }
+            if (userRows[0].password !== oldPassword) {
+                console.warn(`[PUT /users/${id}] Password mismatch. DB has: "${userRows[0].password}", Req has: "${oldPassword}"`);
+                return res.status(401).json({ message: 'Current password is incorrect.' });
+            }
+            console.log(`[PUT /users/${id}] Password verification successful.`);
+        }
+
         if (email) {
             const [existing] = await pool.query('SELECT id FROM users WHERE email = ? AND id != ?', [email, id]);
             if (existing.length > 0) {
@@ -658,52 +694,49 @@ app.put('/users/:id', async (req, res) => {
             }
         }
 
-        let fields = ['name = ?'];
-        let params = [name];
+        let fields = [];
+        let params = [];
 
-        if (password) {
-            fields.push('password = ?');
-            params.push(password);
-        }
+        if (name) { fields.push('name = ?'); params.push(name); }
+        if (password) { fields.push('password = ?'); params.push(password); }
         if (email) {
             fields.push('email = ?');
             fields.push('username = ?');
             params.push(email);
             params.push(email);
         }
-        if (department !== undefined) {
-            fields.push('department = ?');
-            params.push(department || null);
-        }
-        if (subject !== undefined) {
-            fields.push('subject = ?');
-            params.push(subject || null);
-        }
-        if (rollNumber !== undefined) {
-            fields.push('rollNumber = ?');
-            params.push(rollNumber || null);
-        }
-        if (branch !== undefined) {
-            fields.push('branch = ?');
-            params.push(branch || null);
-        }
-        if (domain !== undefined) {
-            fields.push('domain = ?');
-            params.push(domain || null);
-        }
-        if (section !== undefined) {
-            fields.push('section = ?');
-            params.push(section || null);
+        if (department !== undefined) { fields.push('department = ?'); params.push(department || null); }
+        if (subject !== undefined) { fields.push('subject = ?'); params.push(subject || null); }
+        if (rollNumber !== undefined) { fields.push('rollNumber = ?'); params.push(rollNumber || null); }
+        if (branch !== undefined) { fields.push('branch = ?'); params.push(branch || null); }
+        if (domain !== undefined) { fields.push('domain = ?'); params.push(domain || null); }
+        if (section !== undefined) { fields.push('section = ?'); params.push(section || null); }
+
+        if (fields.length === 0) {
+            return res.json({ message: 'No fields to update' });
         }
 
         params.push(id);
-
+        
+        console.log(`[PUT /users/${id}] Executing UPDATE with ${fields.length} fields...`);
         await pool.query(`UPDATE users SET ${fields.join(', ')} WHERE id = ?`, params);
 
+        console.log(`[PUT /users/${id}] Fetching updated user details...`);
         const [updatedUser] = await pool.query('SELECT id, name, email, role, department, subject, password, rollNumber, branch, section, domain FROM users WHERE id = ?', [id]);
+        
+        if (updatedUser.length === 0) {
+            return res.status(404).json({ message: 'User not found after update' });
+        }
+
+        console.log(`[PUT /users/${id}] Update successful!`);
         res.json(updatedUser[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error(`[PUT /users/${id}] EXCEPTION:`, err);
+        res.status(500).json({ 
+            error: 'Server error during update', 
+            details: err.message,
+            code: err.code 
+        });
     }
 });
 

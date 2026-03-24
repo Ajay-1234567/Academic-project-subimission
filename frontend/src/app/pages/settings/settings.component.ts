@@ -17,7 +17,7 @@ import { ApiService } from '../../core/services/api.service';
       <header class="page-header">
         <div class="header-icon">⚙️</div>
         <div>
-          <h1>Settings</h1>
+          <h1 style="color: #ff4d4d; text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);">Settings (v-ULTRA)</h1>
           <p>Manage your account preferences and application settings</p>
         </div>
         <div class="role-badge" [class]="user?.role">{{ user?.role | titlecase }}</div>
@@ -336,7 +336,10 @@ export class SettingsComponent implements OnInit {
       return;
     }
     this.isSavingPw = true;
-    this.apiService.updateProfile(this.user.id, { password: this.newPassword }).subscribe({
+    this.apiService.updateProfile(this.user.id, { 
+      password: this.newPassword,
+      oldPassword: this.oldPassword 
+    }).subscribe({
       next: () => {
         this.isSavingPw = false;
         this.oldPassword = '';
@@ -346,7 +349,21 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         this.isSavingPw = false;
-        this.showError('Failed to update password. Please try again.');
+        console.error('Password Update Error:', err);
+        
+        let msg = 'Failed to update password. Please try again.';
+        if (err.error) {
+          if (typeof err.error === 'string') {
+            msg = err.error;
+          } else {
+            msg = err.error.message || err.error.error || err.error.details || msg;
+          }
+        } else if (err.message) {
+          msg = err.message;
+        }
+        
+        const statusCode = err.status || 'unknown';
+        this.showError(`[V-ULTRA] Error ${statusCode}: ${msg}`);
       }
     });
   }
