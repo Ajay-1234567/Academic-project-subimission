@@ -46,7 +46,6 @@ import { AuthService } from '../../core/services/auth.service';
                      onblur="if(!this.value)this.type='text'"
                      class="glass-input">
 
-            <span class="hint">Will be set to 23:59 of the selected date.</span>
           </div>
         </div>
         
