@@ -340,14 +340,15 @@ function createEmailTemplate(content, buttonText, buttonUrl) {
     <body>
         <div class="container">
             <div class="header">
-                <h1>Academic Portal</h1>
+                <img src="https://img.icons8.com/ios-filled/100/ffffff/graduation-cap.png" width="50" height="50" style="margin-bottom: 15px;" alt="Logo">
+                <h1>EduPortal</h1>
             </div>
             <div class="content">
                 ${content}
                 ${buttonText && buttonUrl ? `<div style="text-align: center;"><a href="${buttonUrl}" class="btn">${buttonText}</a></div>` : ''}
             </div>
             <div class="footer">
-                &copy; ${new Date().getFullYear()} Unified Academic Portal. This is an automated notification.
+                &copy; ${new Date().getFullYear()} EduPortal. This is an automated notification.
             </div>
         </div>
     </body>
@@ -372,7 +373,7 @@ async function sendEmail(to, subject, html) {
         });
 
         await transporter.sendMail({
-            from: `"Academic Portal" <${process.env.EMAIL_USER}>`,
+            from: `"EduPortal" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html
