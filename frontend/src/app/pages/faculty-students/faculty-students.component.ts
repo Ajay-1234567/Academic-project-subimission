@@ -21,8 +21,8 @@ const BRANCH_DATA = [
 const ACADEMIC_YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 const GRAD_YEAR_MAP: { [key: string]: string } = {
-  '1st Year': '2030',
-  '2nd Year': '2029',
+  '1st Year': '2029',
+  '2nd Year': '2028',
   '3rd Year': '2027',
   '4th Year': '2026'
 };
