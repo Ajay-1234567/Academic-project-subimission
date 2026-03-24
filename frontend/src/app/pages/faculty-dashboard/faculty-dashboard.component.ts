@@ -26,18 +26,28 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
   template: `
     <app-sidebar role="faculty"></app-sidebar>
     <div class="main-layout fade-in">
-      <header class="page-header">
-        <div>
+
+      <!-- Unified sticky header: title + tab nav in one block -->
+      <div class="dash-header">
+        <div class="dash-title">
           <h1>Faculty Dashboard</h1>
-          <p>Welcome, {{ facultyName }} — manage projects, subjects & students</p>
+          <p>Welcome, {{ facultyName }}</p>
         </div>
-        <div class="view-toggles">
-          <button (click)="viewMode = 'projects'" [class.active]="viewMode === 'projects'">📂 Projects</button>
-          <button (click)="viewMode = 'students'; loadStudents()" [class.active]="viewMode === 'students'">👥 My Students</button>
-          <button (click)="viewMode = 'subjects'" [class.active]="viewMode === 'subjects'">📚 Subjects</button>
-          <button (click)="viewMode = 'real-world'; loadProblemStatements()" [class.active]="viewMode === 'real-world'">🌍 Real World Projects</button>
-        </div>
-      </header>
+        <nav class="view-toggles">
+          <button (click)="setView('projects')" [class.active]="viewMode === 'projects'">
+            <span class="vt-icon">📂</span><span class="vt-label">Projects</span>
+          </button>
+          <button (click)="setView('students')" [class.active]="viewMode === 'students'">
+            <span class="vt-icon">👥</span><span class="vt-label">My Students</span>
+          </button>
+          <button (click)="setView('subjects')" [class.active]="viewMode === 'subjects'">
+            <span class="vt-icon">📚</span><span class="vt-label">Subjects</span>
+          </button>
+          <button (click)="setView('real-world')" [class.active]="viewMode === 'real-world'">
+            <span class="vt-icon">🌍</span><span class="vt-label">Real World</span>
+          </button>
+        </nav>
+      </div>
 
       <!-- PROJECTS VIEW -->
       <div *ngIf="viewMode === 'projects'">
@@ -304,20 +314,51 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
     </div>
   `,
   styles: [`
-    .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
-
-    /* Header */
-    .page-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
-    h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; letter-spacing: -0.5px; }
-    .page-header p { color: #64748b; margin: 0; font-size: 1rem; }
-    
-    .view-toggles { display: flex; background: #e2e8f0; padding: 4px; border-radius: 10px; gap: 2px; }
-    .view-toggles button {
-      padding: 0.5rem 1.2rem; border: none; background: transparent; color: #64748b; font-weight: 600; cursor: pointer; border-radius: 8px;
-      transition: all 0.2s; font-size: 0.9rem;
+    /* ── Base layout ──────────────────────────────────────────── */
+    .main-layout {
+      margin-left: 250px;
+      padding: 2rem;
+      background: #f8fafc;
+      min-height: 100vh;
     }
-    .view-toggles button.active { background: white; color: #4f46e5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+    /* ── Unified Dash Header ───────────────────────────────────── */
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .dash-title h1 { font-size: 1.8rem; font-weight: 700; color: #1e293b; margin: 0 0 0.2rem; letter-spacing: -0.5px; }
+    .dash-title p { color: #64748b; margin: 0; font-size: 0.9rem; }
+
+    /* ── View Toggle Bar ───────────────────────────────────────── */
+    .view-toggles {
+      display: flex;
+      background: #ede9fe;
+      padding: 4px;
+      border-radius: 12px;
+      gap: 2px;
+      border: 1.5px solid #c4b5fd;
+    }
+    .view-toggles button {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.5rem 1rem; border: none; background: transparent;
+      color: #7c3aed; font-weight: 600; cursor: pointer; border-radius: 9px;
+      transition: all 0.2s; font-size: 0.85rem; white-space: nowrap;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .view-toggles .vt-icon { font-size: 1rem; }
+    .view-toggles .vt-label { font-size: 0.85rem; }
+    .view-toggles button.active {
+      background: white; color: #4f46e5;
+      box-shadow: 0 2px 8px rgba(99,102,241,0.18);
+    }
 
     /* Stats Grid */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
@@ -385,6 +426,24 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
     .score-val small { font-size: 0.9rem; color: #64748b; font-weight: normal; }
     .btn-grade { background: #4f46e5; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: background 0.2s; }
     .btn-grade:hover { background: #4338ca; }
+
+    /* Empty & loading states */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      color: #64748b;
+    }
+    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; display: block; line-height: 1; }
+    .empty-state h3 { margin: 0 0 0.5rem; font-size: 1.15rem; color: #334155; font-weight: 600; }
+    .empty-state p { margin: 0; font-size: 0.9rem; color: #94a3b8; }
+    .loading-state { text-align: center; padding: 3rem; color: #64748b; font-size: 0.95rem; }
 
     /* Students View */
     .section-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
@@ -481,6 +540,91 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }
+
+    /* ── MOBILE (≤ 1024px) ──────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      /* 4.5rem top = clears the sidebar hamburger button (≈60px) */
+      .main-layout {
+        margin-left: 0;
+        padding: 4.5rem 1rem 2rem;
+      }
+
+      /* Header: stack title on top, tabs below — NO sticky/fixed */
+      .dash-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: transparent;
+      }
+
+      .dash-title h1 { font-size: 1.4rem; }
+      .dash-title p { font-size: 0.82rem; }
+
+      /* Tab bar: full-width scrollable on mobile */
+      .view-toggles {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        border-radius: 10px;
+        background: #ede9fe;
+        border: 1.5px solid #c4b5fd;
+        padding: 4px;
+        gap: 3px;
+      }
+      .view-toggles::-webkit-scrollbar { display: none; }
+      .view-toggles button {
+        flex: 1;
+        min-width: 80px;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 0.55rem 0.5rem;
+      }
+      .view-toggles .vt-icon { font-size: 1.25rem; }
+      .view-toggles .vt-label { font-size: 0.7rem; display: block; }
+
+      /* Stats grid: 2 cols on mobile */
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+      .stat-card { padding: 0.85rem; }
+      .stat-card .value { font-size: 1.5rem; }
+      .stat-icon { width: 38px; height: 38px; font-size: 1.3rem; }
+
+      /* Student stats: wrap */
+      .student-stats-row { gap: 0.5rem; flex-wrap: wrap; }
+      .mini-stat { min-width: 80px; padding: 0.6rem 0.75rem; }
+      .ms-num { font-size: 1.3rem; }
+
+      /* Filter row: stack */
+      .section-header-row { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .stu-filter-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; width: 100%; }
+      .branch-select { width: 100%; }
+      .stu-filter-tabs { width: 100%; }
+      .stu-filter-tabs button { flex: 1; font-size: 0.78rem; }
+
+      /* Cards: 1 col */
+      .grid-submissions { grid-template-columns: 1fr; }
+
+      /* Table: horizontal scroll */
+      .students-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
+      .students-table { min-width: 600px; }
+
+      /* Controls row: stack */
+      .controls-row { flex-direction: column; align-items: flex-start; }
+      .search-wrapper { max-width: 100%; width: 100%; }
+
+      /* Form grid: 1 col */
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .dash-title h1 { font-size: 1.2rem; }
+      .dash-title p { font-size: 0.78rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    }
   `]
 })
 export class FacultyDashboardComponent implements OnInit {
@@ -668,6 +812,17 @@ export class FacultyDashboardComponent implements OnInit {
       '4': '4th Year'
     };
     return `${yearLabels[year] || year + 'th Year'} - ${sem}`;
+  }
+
+  setView(mode: 'projects' | 'students' | 'subjects' | 'real-world') {
+    this.viewMode = mode;
+    if (mode === 'students') this.loadStudents();
+    if (mode === 'real-world') this.loadProblemStatements();
+    this.scrollTop();
+  }
+
+  scrollTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   showDomainSelector(): boolean {

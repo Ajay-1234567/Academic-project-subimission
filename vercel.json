@@ -1,10 +1,7 @@
 {
   "version": 2,
-  "name": "academic-project-submission-portal",
-  "framework": "angular",
-  "buildCommand": "cd frontend && npm install && npm run build -- --output-path=dist/frontend/browser",
-  "installCommand": "npm install",
-  "outputDirectory": "frontend/dist/frontend/browser",
+  "outputDirectory": "public",
+  "framework": null,
   "rewrites": [
     {
       "source": "/api/(.*)",

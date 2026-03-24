@@ -179,7 +179,7 @@ import { AuthService } from '../../core/services/auth.service';
     * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
 
     .main-layout { margin-left: 250px; padding: 2.5rem; min-height: 100vh; background: #f8fafc; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding: 1.5rem; } }
+    @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
 
     .back-link { display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1.5rem; color: #64748b; text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 0.4rem 0.8rem; border-radius: 6px; background: white; border: 1px solid #e2e8f0; transition: all 0.2s; }
     .back-link:hover { background: #f1f5f9; color: #1e293b; }

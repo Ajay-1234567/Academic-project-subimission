@@ -91,7 +91,7 @@ import { AuthService } from '../../core/services/auth.service';
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
+     }
 
     /* Header */
     .page-header { margin-bottom: 2rem; }
@@ -108,7 +108,7 @@ import { AuthService } from '../../core/services/auth.service';
     .form-title { margin: 0 0 1.5rem; color: var(--primary); font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; }
 
     .form-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 1.5rem; }
-    @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+     }
 
     .form-group { margin-bottom: 1.5rem; }
     label { display: block; margin-bottom: 0.5rem; color: #334155; font-size: 0.9rem; font-weight: 500; }

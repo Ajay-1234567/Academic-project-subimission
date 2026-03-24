@@ -185,10 +185,15 @@ import { forkJoin } from 'rxjs';
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
-    
-    .header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-start; }
-    h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; letter-spacing: -0.5px; }
+    @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1rem 2rem; } }
+
+    .header {
+      margin-bottom: 1.75rem;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0;
+      flex-wrap: wrap; gap: 0.75rem;
+    }
+    h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.25rem; letter-spacing: -0.5px; }
     p { color: #64748b; margin: 0; font-size: 1rem; }
     .mt-5 { margin-top: 3rem; }
     
@@ -321,6 +326,44 @@ import { forkJoin } from 'rxjs';
     .gib-no-proj { font-size: 0.88rem; color: #64748b; font-style: italic; }
     .gib-submit-link { color: #6366f1; font-weight: 600; text-decoration: none; }
     .gib-submit-link:hover { text-decoration: underline; }
+
+    /* ── MOBILE ────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      h1 { font-size: 1.5rem; }
+      p { font-size: 0.9rem; }
+
+      /* Faculty pill: wrap on small screens */
+      .faculty-pill { flex-wrap: wrap; padding: 0.5rem 1rem; margin-top: 0.5rem; }
+
+      /* Notification bell: smaller */
+      .notif-bell { width: 38px; height: 38px; font-size: 1.2rem; }
+
+      /* Stats: 2 columns */
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+      .stat-card { padding: 1rem; }
+      .stat-card .value { font-size: 1.6rem; }
+      .stat-icon { width: 38px; height: 38px; font-size: 1.3rem; }
+
+      /* Subjects: 2 cols, then 1 on tiny screens */
+      .subjects-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+      .subject-card { padding: 1rem; }
+
+      /* Section header: stack on mobile */
+      .section-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 1rem; }
+      .search-box input { width: 100%; }
+
+      /* Controls */
+      .controls { width: 100%; }
+      .controls select { width: 100%; }
+
+      /* Group info banner: tighter */
+      .group-info-banner { padding: 1rem; }
+      .gib-members { gap: 0.35rem; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .subjects-grid { grid-template-columns: 1fr 1fr; }
+    }
   `]
 })
 export class StudentDashboardComponent implements OnInit {

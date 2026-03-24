@@ -95,7 +95,7 @@ import { ApiService } from '../../core/services/api.service';
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
+    @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
 
     .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
     h1 { font-size: 2.5rem; background: linear-gradient(to right, #fbbf24, #f59e0b);

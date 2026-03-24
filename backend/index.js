@@ -27,25 +27,28 @@ app.use(async (req, res, next) => {
         next();
     } catch (err) {
         console.error('DB middleware failed:', err);
-        res.status(500).json({ error: 'Database connection failed' });
+        res.status(500).json({ 
+            error: 'Database connection failed. Please check if your MySQL server is running and database connection strings/environment variables (MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE) are correctly set in the backend environment.',
+            details: err.message
+        });
     }
 });
 
 const dbConfig = {
-    host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
-    port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
-    user: process.env.MYSQLUSER || process.env.DB_USERNAME || process.env.DB_USER || 'root',
-    password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'Root1234',
+    host: (process.env.MYSQLHOST || process.env.DB_HOST || 'localhost').toString().replace('mysql://', '').trim(),
+    port: parseInt((process.env.MYSQLPORT || process.env.DB_PORT || '3306').toString().trim(), 10),
+    user: (process.env.MYSQLUSER || process.env.DB_USERNAME || process.env.DB_USER || 'root').toString().trim(),
+    password: (process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'Root1234').toString().trim(),
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    ssl: process.env.DB_SSL === 'true' ? {
+    ssl: (process.env.DB_SSL === 'true' || process.env.DB_SSL === 'REQUIRED') ? {
         minVersion: 'TLSv1.2',
-        rejectUnauthorized: true
+        rejectUnauthorized: false
     } : undefined
 };
 
-const dbName = process.env.MYSQLDATABASE || process.env.DB_NAME || 'academic_portal';
+const dbName = (process.env.MYSQLDATABASE || process.env.DB_NAME || 'academic_portal').toString().trim();
 
 
 let pool;
@@ -241,11 +244,22 @@ async function initDB() {
         try { await connection.query(`ALTER TABLE users MODIFY COLUMN username VARCHAR(255) DEFAULT NULL`); } catch (e) { }
         try { await connection.query(`ALTER TABLE users DROP INDEX username`); } catch (e) { }
 
+        // Insert default admin user if no admin exists
+        const [adminCount] = await connection.query(`SELECT COUNT(*) as count FROM users WHERE role = 'admin'`);
+        if (adminCount[0].count === 0) {
+            await connection.query(`
+                INSERT INTO users (email, username, password, role, name) 
+                VALUES ('Admin123@gmail.com', 'Admin123@gmail.com', 'admin123', 'admin', 'System Admin')
+            `);
+            console.log('Default admin user created.');
+        }
+
         connection.release();
         console.log('Database initialized successfully.');
 
     } catch (err) {
         console.error('Database initialization failed:', err);
+        throw err;
     }
     })();
     return initPromise;

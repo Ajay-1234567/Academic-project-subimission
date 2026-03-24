@@ -242,11 +242,13 @@ const GRAD_YEARS = ['2023', '2024', '2025', '2026', '2027', '2028', '2029'];
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
+    @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
     .page-header { margin-bottom: 2rem; }
     h1 { font-size: 2rem; font-weight: 800; color: #1e293b; margin: 0; }
     p { color: #64748b; margin-top: 0.5rem; }
 
     .grid-container { display: grid; grid-template-columns: 350px 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 1024px) { .grid-container { display: flex; flex-direction: column; } }
     
     .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
     .form-section h3 { margin-top: 0; margin-bottom: 1.5rem; color: #1e293b; }
@@ -319,11 +321,11 @@ const GRAD_YEARS = ['2023', '2024', '2025', '2026', '2027', '2028', '2029'];
     .catalog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; }
     .catalog-header h3 { margin: 0; color: #1e293b; }
     .catalog-header p { margin: 0.25rem 0 0; font-size: 0.85rem; color: #64748b; }
-    .catalog-search { width: 300px; }
+    .catalog-search { width: 300px; display: flex; align-items: center; gap: 0.5rem; }
     
-    .catalog-table-wrapper { overflow-x: auto; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; }
+    .catalog-table-wrapper { overflow-x: auto; }
     .catalog-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; }
-    .catalog-table th { padding: 1rem; background: #f1f5f9; font-weight: 700; color: #475569; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .catalog-table th { padding: 1rem; background: transparent; border-bottom: 2px solid #e2e8f0; font-weight: 700; color: #475569; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
     .catalog-table td { padding: 1rem; border-bottom: 1px solid #e2e8f0; color: #475569; vertical-align: middle; }
     .bold-cell { font-weight: 600; color: #1e293b; }
     
@@ -337,8 +339,20 @@ const GRAD_YEARS = ['2023', '2024', '2025', '2026', '2027', '2028', '2029'];
     
     .empty-catalog { text-align: center; padding: 3rem; color: #94a3b8; font-style: italic; }
     
-    .btn-wipe-all { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-left: 0.5rem; }
+    .btn-wipe-all { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
     .btn-wipe-all:hover { background: #ef4444; color: white; }
+
+    @media (max-width: 768px) {
+      .catalog-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .catalog-search { width: 100%; }
+      .catalog-search input { flex: 1; min-width: 0; width: 0; }
+      .master-catalog { overflow: hidden; padding: 1.75rem 1.5rem 2rem; }
+      .glass-card { padding: 1.5rem; }
+      h1 { font-size: 1.5rem; }
+      .filter-select { width: 100%; }
+      .sections-grid { grid-template-columns: 1fr; }
+      .catalog-table th, .catalog-table td { padding: 0.75rem 0.6rem; font-size: 0.8rem; }
+    }
   `]
 })
 export class SectionManagementComponent implements OnInit {

@@ -112,7 +112,7 @@ import { AuthService } from '../../core/services/auth.service';
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; min-height: 100vh; background: #f8fafc; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
+    @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
 
     .header { margin: 0 auto 2rem; max-width: 800px; }
     h1 { font-size: 2rem; font-weight: 700; color: #1e293b; letter-spacing: -0.5px; margin-bottom: 0.5rem; }

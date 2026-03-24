@@ -8,13 +8,19 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
-    <aside class="sidebar glass-panel">
+    <button class="mobile-toggle" (click)="toggleMenu()">
+      <span *ngIf="!isMobileMenuOpen">☰</span>
+      <span *ngIf="isMobileMenuOpen">✕</span>
+    </button>
+
+    <aside class="sidebar glass-panel" [class.open]="isMobileMenuOpen">
       <div class="brand">
         <img src="logo_t.png" class="college-logo" alt="Logo">
         <span class="logo-text">EduPortal</span>
       </div>
 
-      <nav class="menu">
+      <nav class="menu" (click)="closeMenu()">
+        <!-- Added click handler to auto-close menu on mobile when a link is clicked -->
         <div class="menu-label">MENU</div>
         
         <!-- Student Links -->
@@ -66,7 +72,6 @@ import { AuthService } from '../../core/services/auth.service';
           </a>
         </ng-container>
 
-
         <div class="menu-label mt-4">ACCOUNT</div>
         <a routerLink="/profile" routerLinkActive="active" class="menu-item">
           <i class="icon">👤</i> Profile
@@ -89,8 +94,30 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
       </div>
     </aside>
+
+    <!-- Overlay backrop immediately behind the sidebar to close it when clicking empty space -->
+    <div *ngIf="isMobileMenuOpen" class="sidebar-overlay" (click)="closeMenu()"></div>
   `,
   styles: [`
+    .mobile-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1000;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      align-items: center;
+      justify-content: center;
+    }
+
     .sidebar {
       width: 250px;
       height: 100vh;
@@ -102,15 +129,16 @@ import { AuthService } from '../../core/services/auth.service';
       padding: 1.5rem;
       border-right: 1px solid var(--border);
       border-radius: 0;
-      z-index: 100;
+      z-index: 900;
       background: #ffffff;
       box-shadow: 1px 0 15px rgba(0,0,0,0.05); /* Soft shadow */
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2.5rem; }
     .college-logo { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
     .logo-text { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
-    .menu { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+    .menu { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; overflow-x: hidden; padding-right: 5px; }
     .menu-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; letter-spacing: 1px; font-weight: 600; }
     .mt-4 { margin-top: 1.5rem; }
     
@@ -141,19 +169,55 @@ import { AuthService } from '../../core/services/auth.service';
       padding-top: 1rem;
       border-top: 1px solid var(--border);
     }
-    .avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+    .avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; flex-shrink: 0; }
     .info { display: flex; flex-direction: column; overflow: hidden; }
     .name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); }
     .email { font-size: 0.75rem; color: #d97706; /* Amber-600 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
     .role { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-top: 2px; }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 850;
+      backdrop-filter: blur(2px);
+    }
+
+    /* MOBILE RESPONSIVE STYLES */
+    @media (max-width: 1024px) {
+      .mobile-toggle {
+        display: flex;
+      }
+      .sidebar {
+        transform: translateX(-100%);
+        width: 280px; /* slightly larger hit target for phones */
+        box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay {
+        display: block;
+      }
+    }
   `]
 })
 export class SidebarComponent {
   @Input() role: string = 'student';
+  isMobileMenuOpen = false;
 
   constructor(public auth: AuthService) { }
 
   get userName() { return this.auth.getUser()?.name || 'User'; }
   get userEmail() { return this.auth.getUser()?.email || ''; }
   get userInitial() { return this.userName.charAt(0); }
+
+  toggleMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+  
+  closeMenu() {
+    this.isMobileMenuOpen = false;
+  }
 }

@@ -201,7 +201,7 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
+     }
 
     /* Header */
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }

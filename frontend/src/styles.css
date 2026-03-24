@@ -142,8 +142,157 @@ body {
   gap: 2rem;
 }
 
-@media (max-width: 768px) {
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
+  @media (max-width: 768px) {
+    .grid-cols-2 {
+      grid-template-columns: 1fr;
+    }
   }
-}
+
+  /* ============================================================
+     GLOBAL MOBILE OVERRIDE — All Admin/Faculty/Student Pages
+     ============================================================ */
+  @media (max-width: 1024px) {
+
+    /* 1. MAIN CONTENT AREA — push below floating hamburger button */
+    .main-layout {
+      margin-left: 0 !important;
+      padding: 5rem 1rem 2rem !important;
+      width: 100vw !important;
+      box-sizing: border-box !important;
+      overflow-x: hidden !important;
+    }
+
+    /* 2. ALL SIDE-BY-SIDE GRIDS → single column stack */
+    .grid-container,
+    .content-grid,
+    .split-layout,
+    .form-grid,
+    .form-row {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      gap: 0.75rem !important;
+    }
+
+    /* 3. SIDEBAR FORM PANELS → full width, keep card appearance */
+    .sidebar-forms,
+    .list-section,
+    .form-card,
+    .list-card,
+    .glass-panel {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      padding: 1.25rem 1rem !important;
+    }
+
+    /* CRITICAL: Preserve glass-panel card visuals — background + shadow */
+    .glass-panel {
+      background: var(--glass-bg) !important;
+      border: 1px solid rgba(255,255,255,0.8) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6) !important;
+      margin-top: 1rem !important; /* Separates card from page subtitle above */
+    }
+
+    /* 4. INPUTS → full width */
+    .glass-input,
+    .glass-textarea,
+    input[class],
+    select[class],
+    textarea[class] {
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    /* 5. PAGE HEADER — stack title + actions vertically */
+    .page-header,
+    .header {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.75rem !important;
+    }
+
+    /* 6. HEADER ACTIONS (search + back button) — stack vertically */
+    .header-actions {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      gap: 0.5rem !important;
+    }
+
+    .admin-search-wrap {
+      width: 100% !important;
+      min-width: unset !important;
+    }
+
+    .admin-search-input {
+      width: 100% !important;
+    }
+
+    .back-btn {
+      align-self: flex-start;
+    }
+
+    /* 7. CATALOG HEADER — stack search below title */
+    .catalog-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.75rem !important;
+    }
+
+    .catalog-search {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-top: 0 !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      overflow: hidden !important;
+    }
+
+    .catalog-search .glass-input {
+      width: 0 !important;       /* Let flex grow handle it */
+      min-width: 0 !important;   /* Allow shrinking below content size */
+      flex: 1 1 0 !important;
+    }
+
+    .btn-wipe-all {
+      flex-shrink: 0 !important;
+      white-space: nowrap !important;
+    }
+
+    .master-catalog {
+      overflow: hidden !important;
+    }
+
+    /* 8. TYPOGRAPHY */
+    h1 {
+      font-size: 1.5rem !important;
+      line-height: 1.25 !important;
+    }
+
+    h2 {
+      font-size: 1.2rem !important;
+    }
+
+    .page-header p,
+    .subtitle {
+      font-size: 0.88rem !important;
+    }
+
+    /* 9. TABLES — allow horizontal scroll to see all columns */
+    .table-container,
+    .students-table-wrap,
+    .catalog-table-wrapper {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* 10. BUTTONS — full width on mobile */
+    .btn-primary,
+    .btn-save-mini {
+      width: 100% !important;
+    }
+  }

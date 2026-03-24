@@ -177,7 +177,6 @@ import { ApiService } from '../../core/services/api.service';
     * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
 
     .main-layout { margin-left: 250px; padding: 2.5rem; background: #f8fafc; min-height: 100vh; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding: 1.5rem; } }
 
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; }
     h1 { font-size: 2rem; font-weight: 800; color: #0f172a; margin: 0 0 0.3rem; }
@@ -259,6 +258,25 @@ import { ApiService } from '../../core/services/api.service';
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }
+
+    /* ── MOBILE ─────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .main-layout { margin-left: 0; padding: 5rem 1rem 2rem; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; margin-bottom: 1.5rem; }
+      h1 { font-size: 1.6rem; }
+      .header-time { font-size: 0.78rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+      .stat-card { padding: 1.2rem; }
+      .stat-value { font-size: 2rem; }
+      .stat-emoji { font-size: 1.8rem; padding: 0.5rem; }
+      .actions-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+      .action-card { padding: 1rem 1.25rem; }
+      .faculty-cards-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+      h1 { font-size: 1.4rem; }
+    }
   `]
 })
 export class AdminDashboardComponent implements OnInit {

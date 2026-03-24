@@ -232,7 +232,7 @@ import { ApiService } from '../../core/services/api.service';
     * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
 
     .main-layout { margin-left: 250px; padding: 2.5rem; background: #f8fafc; min-height: 100vh; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding: 1.5rem; } }
+     }
 
     /* Header */
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }

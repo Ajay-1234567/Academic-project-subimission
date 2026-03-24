@@ -393,14 +393,32 @@ import { HttpClient } from '@angular/common/http';
       font-size: 0.85rem; color: #475569; text-align: center;
     }
 
+    /* MOBILE RESPONSIVE STYLES */
     @media (max-width: 768px) {
-      .hero-title { font-size: 2.2rem; }
-      .nav-links { display: none; }
-      .hero-stats { gap: 1rem; padding: 1.2rem; }
+      .nav-container { padding: 1rem; justify-content: center; } /* Center logo */
+      .nav-links, .nav-actions { display: none; } /* Hide duplicate top-nav buttons on mobile */
+      .college-logo { width: 50px; height: 50px; }
+      .logo-text { font-size: 1.4rem; }
+      
+      .hero { padding: 3rem 1rem 2rem; }
+      .hero-title { font-size: 2.2rem; line-height: 1.2; }
+      .hero-sub { font-size: 1rem; }
+      .hero-cta { flex-direction: column; gap: 1rem; width: 100%; }
+      .btn-primary-lg, .btn-ghost { width: 100%; display: block; }
+      
+      .hero-stats { flex-direction: column; gap: 1.5rem; padding: 1.5rem; }
       .divider-v { display: none; }
-      .steps-grid { flex-direction: column; }
-      .step-arrow { transform: rotate(90deg); }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
+      
+      .features-section, .roles-section, .how-section, .cta-banner { padding: 3rem 1.5rem; }
+      .section-title { font-size: 1.8rem; }
+      
+      .steps-grid { flex-direction: column; gap: 1rem; }
+      .step-card { max-width: 100%; width: 100%; }
+      .step-arrow { transform: rotate(90deg); margin: 0.5rem 0; }
+      
+      .roles-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+      .footer-brand .logo { justify-content: center; }
     }
   `]
 })
@@ -410,7 +428,7 @@ export class HomeComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.http.get<any>('http://localhost:3000/api/stats').subscribe({
+    this.http.get<any>('/api/stats').subscribe({
       next: (data) => { this.stats = data; },
       error: () => { /* keep zeros on error */ }
     });

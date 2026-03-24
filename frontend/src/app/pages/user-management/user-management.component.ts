@@ -142,7 +142,7 @@ const BRANCH_DATA = [
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
+    @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
 
     .header { margin-bottom: 2rem; }
     h1 {
@@ -179,8 +179,11 @@ const BRANCH_DATA = [
     }
     .btn-dismiss:hover { color: #ef4444; }
 
-    .content-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
-    @media (max-width: 1024px) { .content-grid { grid-template-columns: 1fr; } }
+    .content-grid { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 900px) { .content-grid { display: flex; flex-direction: column; } }
+    
+    /* Ensure inputs never overflow their container */
+    .form-card input, .form-card select { min-width: 0; box-sizing: border-box; }
 
     .p-6 { padding: 1.5rem; }
     .form-group { margin-bottom: 1rem; }
@@ -191,23 +194,24 @@ const BRANCH_DATA = [
     .mt-2 { margin-top: 0.5rem; }
 
     .table-container { overflow-x: auto; margin-top: 1rem; }
-    table { width: 100%; border-collapse: collapse; }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; }
     th {
-      text-align: left; padding: 1rem; color: var(--text-secondary);
+      text-align: left; padding: 0.85rem 1rem; color: var(--text-secondary);
       border-bottom: 1px solid var(--border);
-      font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;
+      font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;
+      white-space: nowrap;
     }
-    td { padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
 
-    .user-name-cell { display: flex; align-items: center; gap: 0.7rem; }
+    .user-name-cell { display: flex; align-items: center; gap: 0.7rem; white-space: nowrap; min-width: 130px; }
     .avatar-sm {
       width: 32px; height: 32px; border-radius: 50%;
       background: linear-gradient(135deg, #818cf8, #ec4899);
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 0.8rem; color: white; flex-shrink: 0;
     }
-    .email-cell { color: #d97706; font-family: monospace; font-size: 0.88rem; }
-    .password-cell { font-family: monospace; color: var(--text-secondary); font-size: 0.85rem; letter-spacing: 0.5px; }
+    .email-cell { color: #d97706; font-family: monospace; font-size: 0.85rem; white-space: nowrap; min-width: 180px; }
+    .password-cell { font-family: monospace; color: var(--text-secondary); font-size: 0.82rem; white-space: nowrap; }
     
     .action-buttons { display: flex; gap: 0.5rem; }
     .btn-icon {
@@ -233,8 +237,8 @@ const BRANCH_DATA = [
     .text-center { text-align: center; color: var(--text-secondary); padding: 2rem; }
     .loading { text-align: center; padding: 2rem; color: var(--text-secondary); }
 
-    .branch-section-box { display: flex; flex-direction: column; gap: 4px; }
-    .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; width: fit-content; }
+    .branch-section-box { display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; min-width: 120px; }
+    .badge { font-size: 0.68rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
     .b-blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
     .b-purple { background: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
     .b-cyan { background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }

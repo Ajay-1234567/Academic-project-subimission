@@ -154,7 +154,7 @@ import { AuthService } from '../../core/services/auth.service';
   `,
     styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
-    @media (max-width: 768px) { .main-layout { margin-left: 0; padding-top: 80px; } }
+     }
 
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
     h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; }
