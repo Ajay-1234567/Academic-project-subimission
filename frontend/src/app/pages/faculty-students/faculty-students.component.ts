@@ -389,6 +389,7 @@ export class FacultyStudentsComponent implements OnInit {
   branchList = BRANCH_DATA;
   academicYears = ACADEMIC_YEARS;
   availableSections: any[] = [];
+  allSections: any[] = [];
 
   form = { name: '', email: '', password: '', department: 'B.Tech', branch: '', domain: '', section: '', subjects: [] as string[], academicYear: '', rollNumber: '' };
   isEditing = false;
@@ -419,6 +420,7 @@ export class FacultyStudentsComponent implements OnInit {
   ngOnInit() {
     this.loadStudents();
     this.loadAvailableSubjects();
+    this.loadAllSections();
   }
 
   loadAvailableSubjects() {
@@ -510,22 +512,26 @@ export class FacultyStudentsComponent implements OnInit {
 
   onYearOrBranchChange() {
     this.form.section = '';
-    this.availableSections = [];
     this.searchStatus = '';
-
+    
     if (this.form.branch && this.form.academicYear) {
       const gradYear = this.getGradYear();
-      this.searchStatus = `Searching for ${this.form.academicYear} (Grad ${gradYear})...`;
       
-      this.apiService.getSections('B.Tech', gradYear, this.form.branch, this.form.domain).subscribe({
-        next: (data) => {
-          this.availableSections = data;
-          this.searchStatus = data.length > 0 ? '' : 'No sections found for this combination.';
-        },
-        error: () => { 
-          this.searchStatus = 'Error connecting to server.';
-        }
+      // INSTANT LOCAL FILTERING
+      this.availableSections = this.allSections.filter(s => {
+        const matchesYear = s.graduationYear == gradYear;
+        const matchesBranch = (s.branches || '').toLowerCase().includes(this.form.branch.toLowerCase());
+        const matchesDomain = !this.form.domain || 
+                             this.form.domain === 'None / General' || 
+                             (s.domain || '').toLowerCase() === this.form.domain.toLowerCase() ||
+                             !s.domain || s.domain === 'None / General';
+        
+        return matchesYear && matchesBranch && matchesDomain;
       });
+
+      if (this.availableSections.length === 0) {
+        this.searchStatus = 'No matching sections found locally.';
+      }
     }
   }
 
@@ -534,13 +540,13 @@ export class FacultyStudentsComponent implements OnInit {
   }
 
   loadAllSections() {
-    this.searchStatus = 'Loading all sections...';
     this.apiService.getSections().subscribe({
       next: (data) => {
-        this.availableSections = data;
-        this.searchStatus = `Found ${data.length} total sections. Select one from the list.`;
+        this.allSections = data;
+        // Run initial filter if values exist
+        if (this.form.branch && this.form.academicYear) this.onYearOrBranchChange();
       },
-      error: () => this.searchStatus = 'Failed to load sections.'
+      error: () => this.searchStatus = 'Failed to pre-load sections.'
     });
   }
 
