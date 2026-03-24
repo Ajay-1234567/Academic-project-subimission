@@ -210,10 +210,11 @@ const BRANCH_DATA = [
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 0.8rem; color: white; flex-shrink: 0;
     }
-    .email-cell { color: #d97706; font-family: monospace; font-size: 0.85rem; white-space: nowrap; min-width: 180px; }
+    .email-cell { color: #d97706; font-family: monospace; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 15vw; }
     .password-cell { font-family: monospace; color: var(--text-secondary); font-size: 0.82rem; white-space: nowrap; }
     
-    .action-buttons { display: flex; gap: 0.5rem; }
+    th:last-child, td:last-child { position: sticky; right: 0; background: var(--surface); z-index: 5; box-shadow: -4px 0 8px rgba(0,0,0,0.05); }
+    .action-buttons { display: flex; gap: 0.5rem; padding-left: 0.5rem; }
     .btn-icon {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
       width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
@@ -237,11 +238,11 @@ const BRANCH_DATA = [
     .text-center { text-align: center; color: var(--text-secondary); padding: 2rem; }
     .loading { text-align: center; padding: 2rem; color: var(--text-secondary); }
 
-    .branch-section-box { display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; min-width: 120px; }
-    .badge { font-size: 0.68rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
-    .b-blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
-    .b-purple { background: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
-    .b-cyan { background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .branch-section-box { display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; max-width: 180px; }
+    .badge { font-size: 0.65rem; padding: 1px 5px; border-radius: 4px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+    .b-blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
+    .b-purple { background: rgba(139, 92, 246, 0.1); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.2); }
+    .b-cyan { background: rgba(6, 182, 212, 0.1); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.2); }
     
     .assigned-faculty { display: flex; flex-wrap: wrap; gap: 4px; }
     .faculty-tag { background: #f0f9ff; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; border: 1px solid #bae6fd; }
