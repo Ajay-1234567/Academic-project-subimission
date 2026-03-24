@@ -99,10 +99,15 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
           </div>
           <div class="form-group">
             <label>Section <span class="req">*</span></label>
-            <select [(ngModel)]="form.section" class="glass-input glass-select" [disabled]="availableSections.length === 0" required>
-              <option value="">{{ availableSections.length === 0 ? 'No Sections Available' : 'Select Section' }}</option>
-              <option *ngFor="let s of availableSections" [value]="s.name">{{ s.name }}</option>
-            </select>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <select [(ngModel)]="form.section" class="glass-input glass-select" [disabled]="availableSections.length === 0" style="flex: 1;" required>
+                <option value="">{{ availableSections.length === 0 ? 'No Sections Available' : 'Select Section' }}</option>
+                <option *ngFor="let s of availableSections" [value]="s.name">{{ s.name }}</option>
+              </select>
+              <button type="button" (click)="onYearOrBranchChange()" class="btn-refresh" title="Force Refresh">🔄</button>
+            </div>
+            <button type="button" *ngIf="availableSections.length === 0 && (form.branch || form.academicYear)" (click)="loadAllSections()" class="btn-load-all">Load All Sections Anyway</button>
+            <div class="search-status" *ngIf="searchStatus">{{ searchStatus }}</div>
             <small class="help-text" *ngIf="availableSections.length === 0 && form.branch">
               Searching for <b>{{ form.academicYear }}</b> (Grad: {{ getGradYear() }}) 
               in <b>{{ form.branch }}</b> 
@@ -366,6 +371,10 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
       .header-stats { grid-template-columns: 1fr; }
       .btn-primary { width: 100%; }
     }
+    .btn-refresh { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; cursor: pointer; transition: all 0.2s; }
+    .btn-refresh:hover { background: #f1f5f9; border-color: var(--primary); }
+    .btn-load-all { margin-top: 0.5rem; font-size: 0.75rem; color: var(--primary); background: transparent; border: none; padding: 0; text-decoration: underline; cursor: pointer; font-weight: 600; }
+    .search-status { font-size: 0.75rem; color: #64748b; margin-top: 0.25rem; font-style: italic; }
   `]
 })
 export class FacultyStudentsComponent implements OnInit {
@@ -522,6 +531,17 @@ export class FacultyStudentsComponent implements OnInit {
 
   getGradYear(): string {
     return GRAD_YEAR_MAP[this.form.academicYear] || 'Unknown';
+  }
+
+  loadAllSections() {
+    this.searchStatus = 'Loading all sections...';
+    this.apiService.getSections().subscribe({
+      next: (data) => {
+        this.availableSections = data;
+        this.searchStatus = `Found ${data.length} total sections. Select one from the list.`;
+      },
+      error: () => this.searchStatus = 'Failed to load sections.'
+    });
   }
 
   searchStatus = '';
