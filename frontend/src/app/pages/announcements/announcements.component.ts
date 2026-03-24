@@ -170,12 +170,24 @@ import { AuthService } from '../../core/services/auth.service';
       .main-layout { margin-left: 0; padding: 4.5rem 1rem 2rem; }
       .page-header { flex-direction: column; align-items: flex-start; }
       h1 { font-size: 1.6rem; }
-      .form-card { padding: 1.5rem; }
+      .form-card { padding: 1.25rem; }
       .form-grid { grid-template-columns: 1fr; gap: 1rem; }
-      .date-time-row { flex-direction: column; }
+      
+      .date-time-row { flex-direction: column; gap: 0.75rem; }
+      .glass-input[type="date"], .glass-input[type="time"] { 
+        min-height: 48px; 
+        color: #1e293b !important;
+        -webkit-appearance: listbox; /* Forces native mobile UI display */
+      }
       .time-input { flex: none; width: 100%; }
+      
       .card-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
       .btn-icon.delete { align-self: flex-end; }
+    }
+
+    @media (max-width: 480px) {
+      .form-title { font-size: 1rem; }
+      .btn-primary { width: 100%; padding: 0.85rem; }
     }
   `]
 })
