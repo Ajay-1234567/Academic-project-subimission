@@ -342,7 +342,7 @@ export class LoginComponent implements OnInit {
         } else {
            const body = err.error;
            const rawErr = (typeof body === 'string') ? body : (body?.message || body?.error || JSON.stringify(body));
-           this.errorMessage = String(rawErr || 'An unexpected error occurred during login.');
+           this.errorMessage = (typeof rawErr === 'string') ? rawErr : JSON.stringify(rawErr);
         }
         this.isLoading = false;
       }

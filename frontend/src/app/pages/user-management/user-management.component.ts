@@ -300,8 +300,14 @@ export class UserManagementComponent implements OnInit {
           this.isSubmitting = false;
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || 'Failed to update user.';
           this.isSubmitting = false;
+          if (err.status === 0) {
+            this.errorMessage = 'Cannot connect to server. Ensure backend is running.';
+          } else {
+            const body = err.error;
+            const rawErr = (typeof body === 'string') ? body : (body?.message || body?.error || JSON.stringify(body));
+            this.errorMessage = (typeof rawErr === 'string') ? rawErr : JSON.stringify(rawErr);
+          }
         }
       });
       return;
@@ -322,8 +328,14 @@ export class UserManagementComponent implements OnInit {
         this.isSubmitting = false;
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Failed to add user.';
         this.isSubmitting = false;
+        if (err.status === 0) {
+          this.errorMessage = 'Cannot connect to server. Ensure backend is running.';
+        } else {
+          const body = err.error;
+          const rawErr = (typeof body === 'string') ? body : (body?.message || body?.error || JSON.stringify(body));
+          this.errorMessage = (typeof rawErr === 'string') ? rawErr : JSON.stringify(rawErr);
+        }
       }
     });
   }
@@ -353,7 +365,11 @@ export class UserManagementComponent implements OnInit {
     if (!confirm('Are you sure you want to delete this user?')) return;
     this.apiService.deleteUser(id).subscribe({
       next: () => { this.users = this.users.filter(u => u.id !== id); },
-      error: (err) => { this.errorMessage = 'Failed to delete user'; }
+      error: (err) => { 
+        const body = err.error;
+        const rawErr = (typeof body === 'string') ? body : (body?.message || body?.error || 'Failed to delete user');
+        this.errorMessage = String(rawErr);
+      }
     });
   }
 
