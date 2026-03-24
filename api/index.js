@@ -574,7 +574,8 @@ app.post('/evaluate', async (req, res) => {
 
         const [updatedProject] = await pool.query('SELECT * FROM projects WHERE id = ?', [projectId]);
         
-        // ---- EMAIL ALERT ----
+        // ---- EMAIL ALERT REMOVED ----
+        /*
         try {
             const [[student]] = await pool.query(`
                 SELECT u.email, u.name, u.emailNotifications, p.title 
@@ -602,6 +603,7 @@ app.post('/evaluate', async (req, res) => {
                 );
             }
         } catch (mailErr) { console.error('Grading email trigger failed:', mailErr); }
+        */
 
         res.json(updatedProject[0]);
     } catch (err) {
@@ -846,33 +848,12 @@ app.post('/announcements', async (req, res) => {
         );
         const [newRow] = await pool.query('SELECT * FROM announcements WHERE id = ?', [result.insertId]);
         
-        // ---- EMAIL ALERT ----
+        // ---- EMAIL ALERT REMOVED ----
+        /*
         try {
-            const [students] = await pool.query("SELECT email, name FROM users WHERE role = 'student' AND emailNotifications = TRUE");
-            for (let s of students) {
-                if (s.email) {
-                    await sendEmail(
-                        s.email, 
-                        `📢 New Announcement: ${title}`, 
-                        createEmailTemplate(
-                            `<h3>New Announcement</h3>
-                             <p>Hello <b>${s.name}</b>,</p>
-                             <p>A new notice has been posted by <b>${facultyName}</b>:</p>
-                             
-                             <div class="meta" style="background: #eef2ff; border-color: #c7d2fe;">
-                                <h4 style="margin-top: 0; color: #3730a3;">${title}</h4>
-                                <p style="font-size: 15px; color: #312e81;">${message}</p>
-                                ${deadline ? `<hr style="margin: 16px 0; border-top-color: #c7d2fe;"><div class="meta-item"><span class="meta-label">📅 Deadline:</span> <b>${new Date(deadline.replace(' ', 'T')).toLocaleDateString('en-US', { dateStyle: 'long' })}</b></div>` : ''}
-                             </div>
-                             
-                             <p>Please log in to the portal for more details or to submit any required files.</p>`,
-                            "View Announcement",
-                            "academic-project-subimission.vercel.app/announcements"
-                        )
-                    );
-                }
-            }
+           // ... (previous announcement email logic)
         } catch (mailErr) { console.error('Announcement email trigger failed:', mailErr); }
+        */
 
         res.status(201).json(newRow[0]);
     } catch (err) {
