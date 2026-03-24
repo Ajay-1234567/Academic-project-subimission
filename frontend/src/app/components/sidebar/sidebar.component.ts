@@ -198,6 +198,11 @@ import { AuthService } from '../../core/services/auth.service';
       .sidebar-overlay {
         display: block;
       }
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 10px 0 50px rgba(0,0,0,0.3);
+      }
+      .brand { margin-top: 3rem; } /* Gives room for X button on mobile */
     }
   `]
 })
