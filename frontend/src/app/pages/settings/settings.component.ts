@@ -115,26 +115,7 @@ import { ApiService } from '../../core/services/api.service';
         <!-- RIGHT COLUMN -->
         <div class="settings-col">
 
-          <!-- Notifications -->
-          <section class="settings-card">
-            <div class="card-heading">
-              <span class="card-icon">🔔</span>
-              <div>
-                <h2>Notifications</h2>
-                <p>Control what alerts you receive</p>
-              </div>
-            </div>
 
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <div class="toggle-label">Email Alerts</div>
-                <div class="toggle-desc">Receive critical notifications via email</div>
-              </div>
-              <button class="toggle-switch" [class.on]="notifPrefs.email" (click)="toggleNotif('email')">
-                <span class="knob"></span>
-              </button>
-            </div>
-          </section>
 
           <!-- Logout Card -->
           <section class="settings-card logout-card">
