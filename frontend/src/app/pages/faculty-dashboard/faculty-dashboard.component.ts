@@ -650,9 +650,10 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
     }
 
     @media (max-width: 480px) {
-      .dash-title h1 { font-size: 1.2rem; }
-      .dash-title p { font-size: 0.78rem; }
-      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .dash-title h1 { font-size: 1.25rem; }
+      .dash-title p { font-size: 0.75rem; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+      .student-stats-row { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
     }
   `]
 })
