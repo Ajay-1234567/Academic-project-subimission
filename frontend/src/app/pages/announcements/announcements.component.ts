@@ -31,21 +31,14 @@ import { AuthService } from '../../core/services/auth.service';
           </div>
           <div class="form-group deadline-group">
             <label>Deadline (Optional)</label>
-            <div class="date-time-row">
               <input [(ngModel)]="form.deadlineDate" 
                      type="text" 
-                     placeholder="Select Date"
+                     placeholder="Select Deadline Date"
                      onfocus="(this.type='date')" 
                      onblur="if(!this.value)this.type='text'"
                      class="glass-input">
-              <input [(ngModel)]="form.deadlineTime" 
-                     type="text" 
-                     placeholder="Select Time"
-                     onfocus="(this.type='date' ? this.type='time' : this.type='time')"
-                     onblur="if(!this.value)this.type='text'"
-                     class="glass-input time-input">
-            </div>
-            <span class="hint">Defaults to 23:59 if time is not set.</span>
+
+            <span class="hint">Will be set to 23:59 of the selected date.</span>
           </div>
         </div>
         
@@ -135,8 +128,6 @@ import { AuthService } from '../../core/services/auth.service';
     .glass-input::placeholder { color: var(--text-secondary); }
     textarea.glass-input { resize: vertical; min-height: 100px; }
 
-    .date-time-row { display: flex; gap: 0.5rem; }
-    .time-input { flex: 0 0 140px; }
     .hint { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; }
 
     .form-actions { display: flex; justify-content: flex-end; padding-top: 1rem; }
@@ -210,7 +201,7 @@ export class AnnouncementsComponent implements OnInit {
   isLoading = false;
   isSending = false;
 
-  form = { title: '', message: '', deadlineDate: '', deadlineTime: '' };
+  form = { title: '', message: '', deadlineDate: '' };
 
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
@@ -235,11 +226,10 @@ export class AnnouncementsComponent implements OnInit {
     this.isSending = true;
     const user = this.authService.currentUser();
 
-    // Combine date + time into MySQL DATETIME format (YYYY-MM-DD HH:MM:SS)
+    // Combine date into MySQL DATETIME format (YYYY-MM-DD 23:59:59)
     let deadline: string | null = null;
     if (this.form.deadlineDate) {
-      const time = this.form.deadlineTime || '23:59';
-      deadline = `${this.form.deadlineDate} ${time}:00`;
+      deadline = `${this.form.deadlineDate} 23:59:59`;
     }
 
     this.apiService.createAnnouncement({
@@ -251,7 +241,7 @@ export class AnnouncementsComponent implements OnInit {
     }).subscribe({
       next: (newItem) => {
         this.announcements.unshift(newItem);
-        this.form = { title: '', message: '', deadlineDate: '', deadlineTime: '' };
+        this.form = { title: '', message: '', deadlineDate: '' };
         this.isSending = false;
       },
       error: (err: any) => {
