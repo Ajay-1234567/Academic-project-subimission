@@ -130,7 +130,7 @@ import { ApiService } from '../../core/services/api.service';
               </div>
             </div>
 
-            <button class="btn-secondary" (click)="savePrefs()">💾 Save Appearance</button>
+
           </section>
 
         </div>
@@ -188,7 +188,7 @@ import { ApiService } from '../../core/services/api.service';
               </button>
             </div>
 
-            <button class="btn-secondary" (click)="saveNotifPrefs()">💾 Save Notification Settings</button>
+
           </section>
 
           <!-- Role-specific: STUDENT -->
@@ -231,7 +231,7 @@ import { ApiService } from '../../core/services/api.service';
               </button>
             </div>
 
-            <button class="btn-secondary" (click)="saveStudentPrefs()">💾 Save Student Settings</button>
+
           </section>
 
           <!-- Role-specific: FACULTY -->
@@ -266,7 +266,7 @@ import { ApiService } from '../../core/services/api.service';
 
             <div class="form-group mt-4">
               <label>Default Grading Scale</label>
-              <select [(ngModel)]="facultyPrefs.gradingScale" class="field">
+              <select [(ngModel)]="facultyPrefs.gradingScale" class="field" (change)="saveFacultyPrefs()">
                 <option value="100">Out of 100</option>
                 <option value="50">Out of 50</option>
                 <option value="10">Out of 10</option>
@@ -274,7 +274,7 @@ import { ApiService } from '../../core/services/api.service';
               </select>
             </div>
 
-            <button class="btn-secondary" (click)="saveFacultyPrefs()">💾 Save Faculty Settings</button>
+
           </section>
 
           <!-- Role-specific: ADMIN -->
@@ -319,15 +319,15 @@ import { ApiService } from '../../core/services/api.service';
 
             <div class="form-group mt-4">
               <label>Current Academic Year</label>
-              <input type="text" [(ngModel)]="adminPrefs.academicYear" class="field" placeholder="e.g. 2024-2025" />
+              <input type="text" [(ngModel)]="adminPrefs.academicYear" class="field" placeholder="e.g. 2024-2025" (input)="saveAdminPrefs()" />
             </div>
 
             <div class="form-group">
               <label>Institution Name</label>
-              <input type="text" [(ngModel)]="adminPrefs.institutionName" class="field" placeholder="e.g. CUTMAP College" />
+              <input type="text" [(ngModel)]="adminPrefs.institutionName" class="field" placeholder="e.g. CUTMAP College" (input)="saveAdminPrefs()" />
             </div>
 
-            <button class="btn-secondary" (click)="saveAdminPrefs()">💾 Save System Settings</button>
+
           </section>
 
           <!-- Danger Zone -->
@@ -595,56 +595,57 @@ export class SettingsComponent implements OnInit {
   toggle(key: keyof typeof this.prefs) {
     (this.prefs as any)[key] = !(this.prefs as any)[key];
     if (key === 'darkMode') this.applyTheme();
+    this.savePrefs();
   }
 
   toggleNotif(key: keyof typeof this.notifPrefs) {
     (this.notifPrefs as any)[key] = !(this.notifPrefs as any)[key];
+    this.saveNotifPrefs();
   }
 
   toggleStudentPref(key: keyof typeof this.studentPrefs) {
     (this.studentPrefs as any)[key] = !(this.studentPrefs as any)[key];
+    this.saveStudentPrefs();
   }
 
   toggleFacultyPref(key: keyof typeof this.facultyPrefs) {
     (this.facultyPrefs as any)[key] = !(this.facultyPrefs as any)[key];
+    this.saveFacultyPrefs();
   }
 
   toggleAdminPref(key: keyof typeof this.adminPrefs) {
     if (typeof (this.adminPrefs as any)[key] === 'boolean') {
       (this.adminPrefs as any)[key] = !(this.adminPrefs as any)[key];
+      this.saveAdminPrefs();
     }
   }
 
   setAccent(color: string) {
     this.prefs.accent = color;
     this.applyTheme();
+    this.savePrefs();
   }
 
   // ─── Save Preferences ────────────────────────────────────────────────────────
   savePrefs() {
     localStorage.setItem('appPrefs', JSON.stringify(this.prefs));
     this.applyTheme();
-    this.showSuccess('Appearance settings saved!');
   }
 
   saveNotifPrefs() {
     localStorage.setItem('notifPrefs', JSON.stringify(this.notifPrefs));
-    this.showSuccess('Notification preferences saved!');
   }
 
   saveStudentPrefs() {
     localStorage.setItem('studentPrefs', JSON.stringify(this.studentPrefs));
-    this.showSuccess('Student settings saved!');
   }
 
   saveFacultyPrefs() {
     localStorage.setItem('facultyPrefs', JSON.stringify(this.facultyPrefs));
-    this.showSuccess('Faculty settings saved!');
   }
 
   saveAdminPrefs() {
     localStorage.setItem('adminPrefs', JSON.stringify(this.adminPrefs));
-    this.showSuccess('System settings saved!');
   }
 
   // ─── Apply Theme ─────────────────────────────────────────────────────────────
