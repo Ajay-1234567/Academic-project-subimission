@@ -80,9 +80,7 @@ import { AuthService } from '../../core/services/auth.service';
           <i class="icon">⚙️</i> Settings
         </a>
         
-        <button (click)="auth.logout()" class="menu-item logout-btn">
-          <i class="icon">🚪</i> Logout
-        </button>
+
       </nav>
 
       <div class="user-profile">
