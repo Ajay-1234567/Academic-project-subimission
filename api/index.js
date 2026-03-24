@@ -39,22 +39,41 @@ app.use(async (req, res, next) => {
     }
 });
 
+// --- DASHBOARD HEALTH MONITOR ---
+// Automatically parse DB URL if user pasted the entire link on Vercel
+const rawUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
+let urlData = null;
+if (rawUrl && rawUrl.startsWith('mysql')) {
+    try {
+        const u = new URL(rawUrl);
+        urlData = {
+            host: u.hostname,
+            port: parseInt(u.port || '3306', 10),
+            user: u.username,
+            password: u.password,
+            database: u.pathname.replace(/^\//, '')
+        };
+    } catch (e) {
+        console.error('URL parse failed:', e.message);
+    }
+}
+
 const dbConfig = {
-    host: (process.env.MYSQLHOST || process.env.DB_HOST || 'localhost').toString().replace('mysql://', '').trim(),
-    port: parseInt((process.env.MYSQLPORT || process.env.DB_PORT || '3306').toString().trim(), 10),
-    user: (process.env.MYSQLUSER || process.env.DB_USERNAME || process.env.DB_USER || 'root').toString().trim(),
-    password: (process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'Root1234').toString().trim(),
+    host: urlData?.host || (process.env.MYSQLHOST || process.env.DB_HOST || 'localhost').toString().replace(/mysql:\/\/|https:\/\/|http:\/\//g, '').split(':')[0].trim(),
+    port: urlData?.port || parseInt((process.env.MYSQLPORT || process.env.DB_PORT || '3306').toString().trim(), 10),
+    user: urlData?.user || (process.env.MYSQLUSER || process.env.DB_USERNAME || process.env.DB_USER || 'root').toString().trim(),
+    password: urlData?.password || (process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'Root1234').toString().trim(),
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    connectTimeout: 10000,
+    connectTimeout: 20000,
     ssl: (String(process.env.DB_SSL).toLowerCase() === 'true' || process.env.DB_SSL === 'REQUIRED') ? {
         minVersion: 'TLSv1.2',
         rejectUnauthorized: false
     } : undefined
 };
 
-const dbName = (process.env.MYSQLDATABASE || process.env.DB_NAME || 'academic_portal').toString().trim();
+const dbName = urlData?.database || (process.env.MYSQLDATABASE || process.env.DB_NAME || 'academic_portal').toString().trim();
 
 let pool;
 let initPromise = null;
