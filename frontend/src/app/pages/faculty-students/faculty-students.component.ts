@@ -199,7 +199,7 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
           </div>
           
           <div class="tags" *ngIf="s.subject">
-             <span class="tag subj-tag">📚 {{ s.subject }}</span>
+             <span *ngFor="let subj of splitDisplaySubjects(s.subject)" class="tag subj-tag">📚 {{ subj }}</span>
           </div>
 
           <div class="card-footer">
@@ -326,9 +326,9 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     .info-item .label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
     .info-item .val { font-size: 0.85rem; color: #334155; font-weight: 500; }
 
-    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
-    .tag { padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; }
-    .subj-tag { background: rgba(16,185,129,0.2); color: #059669; }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; }
+    .tag { padding: 0.4rem 0.9rem; border-radius: 99px; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.3rem; }
+    .subj-tag { background: #ecfdf5; color: #059669; border: 1px solid #d1fae5; line-height: 1; }
     .no-tag { background: rgba(255,255,255,0.05); color: var(--text-secondary); font-style: italic; }
 
     .card-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9; }
@@ -604,6 +604,11 @@ export class FacultyStudentsComponent implements OnInit {
       next: () => { this.students = this.students.filter(x => x.id !== s.id); },
       error: () => { alert('Failed to remove.'); }
     });
+  }
+
+  splitDisplaySubjects(subjStr: string): string[] {
+    if (!subjStr) return [];
+    return subjStr.split(',').map(s => s.trim()).filter(Boolean);
   }
 
   formatSemester(sem: string): string {
