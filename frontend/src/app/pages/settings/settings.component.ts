@@ -645,6 +645,16 @@ export class SettingsComponent implements OnInit {
     this.showSuccess('System settings saved!');
   }
 
+  // ─── Apply Theme ─────────────────────────────────────────────────────────────
+  applyTheme() {
+    if (this.prefs.darkMode) {
+      document.documentElement.classList.add('dark-theme');
+    } else {
+      document.documentElement.classList.remove('dark-theme');
+    }
+    document.documentElement.style.setProperty('--primary', this.prefs.accent);
+  }
+
   // ─── Load Preferences ────────────────────────────────────────────────────────
   loadPrefs() {
     const stored = localStorage.getItem('appPrefs');
@@ -662,15 +672,10 @@ export class SettingsComponent implements OnInit {
     const admin = localStorage.getItem('adminPrefs');
     if (admin) Object.assign(this.adminPrefs, JSON.parse(admin));
 
-    // Pre-fill admin institution
     if (this.user?.role === 'admin' && !this.adminPrefs.institutionName) {
       this.adminPrefs.institutionName = this.user?.institution || '';
     }
     this.applyTheme();
-  }
-
-  applyTheme() {
-    document.documentElement.style.setProperty('--primary', this.prefs.accent);
   }
 
   // ─── Danger Zone ─────────────────────────────────────────────────────────────

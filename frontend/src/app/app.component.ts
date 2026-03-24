@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './core/services/auth.service';
@@ -18,6 +18,19 @@ import { AuthService } from './core/services/auth.service';
     .main-content { min-height: 100vh; }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(public authService: AuthService, public router: Router) { }
+
+  ngOnInit() {
+    this.applyGlobalTheme();
+  }
+
+  private applyGlobalTheme() {
+    const prefs = localStorage.getItem('appPrefs');
+    if (prefs) {
+      const { darkMode, accent } = JSON.parse(prefs);
+      if (darkMode) document.documentElement.classList.add('dark-theme');
+      if (accent) document.documentElement.style.setProperty('--primary', accent);
+    }
+  }
 }

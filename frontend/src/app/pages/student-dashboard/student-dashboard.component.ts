@@ -84,7 +84,7 @@ import { forkJoin } from 'rxjs';
       </div>
 
       <!-- Announcement Banner -->
-      <div class="announce-banner" *ngIf="activeAnnouncements.length > 0 && !bannerDismissed">
+      <div class="announce-banner" *ngIf="shouldShowAnnouncements && activeAnnouncements.length > 0 && !bannerDismissed">
         <div class="banner-content">
           <span class="banner-icon">📢</span>
           <div class="banner-text">
@@ -396,6 +396,12 @@ export class StudentDashboardComponent implements OnInit {
   assignedFacultyId: number | null = null;
 
   get currentUser() { return this.authService.currentUser(); }
+
+  get shouldShowAnnouncements(): boolean {
+    const stored = localStorage.getItem('notifPrefs');
+    if (!stored) return true;
+    return JSON.parse(stored).announcements !== false;
+  }
 
   get activeAnnouncements() {
     return this.announcements.filter(a => {
