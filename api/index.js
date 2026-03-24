@@ -325,8 +325,8 @@ function createEmailTemplate(content, buttonText, buttonUrl) {
         <style>
             body { font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; color: #1e293b; margin: 0; padding: 0; background-color: #f8fafc; }
             .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-            .header { background: #4f46e5; padding: 32px 40px; text-align: center; }
-            .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+            .header { background: #ffffff; padding: 32px 40px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+            .header h1 { color: #1e293b; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
             .content { padding: 40px; }
             .footer { background: #f1f5f9; padding: 24px; text-align: center; color: #64748b; font-size: 13px; }
             .btn { display: inline-block; background: #4f46e5; color: #ffffff !important; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 24px; transition: background 0.2s; }
@@ -340,7 +340,7 @@ function createEmailTemplate(content, buttonText, buttonUrl) {
     <body>
         <div class="container">
             <div class="header">
-                <img src="https://img.icons8.com/ios-filled/100/ffffff/graduation-cap.png" width="50" height="50" style="margin-bottom: 15px;" alt="Logo">
+                <img src="https://academic-project-subimission.vercel.app/logo.png" width="80" height="80" style="margin-bottom: 10px;" alt="EduPortal Logo">
                 <h1>EduPortal</h1>
             </div>
             <div class="content">
