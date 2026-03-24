@@ -279,22 +279,22 @@ if (!process.env.VERCEL) {
 
 
 // ---- EMAIL SYSTEM ----
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.EMAIL_PORT || '587', 10),
-    secure: process.env.EMAIL_SECURE === 'true',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
 async function sendEmail(to, subject, html) {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.warn('Email skipped: SMTP credentials not set.');
         return;
     }
     try {
+        const transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+            port: parseInt(process.env.EMAIL_PORT || '587', 10),
+            secure: process.env.EMAIL_SECURE === 'true',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
         await transporter.sendMail({
             from: `"EduPortal" <${process.env.EMAIL_USER}>`,
             to,
@@ -1085,6 +1085,18 @@ app.put('/faculty/:facultyId/groups/:groupId', async (req, res) => {
         }
 
         const [members] = await pool.query(`
+            SELECT u.id, u.name, u.email, u.rollNumber
+            FROM group_members gm
+            JOIN users u ON gm.studentId = u.id
+            WHERE gm.groupId = ?
+        `, [groupId]);
+
+        res.json({ message: 'Group updated successfully', members });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Delete a group
 app.delete('/faculty/:facultyId/groups/:groupId', async (req, res) => {
     const { facultyId, groupId } = req.params;
