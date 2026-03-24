@@ -316,6 +316,45 @@ if (!process.env.VERCEL) {
 
 
 // ---- EMAIL SYSTEM ----
+function createEmailTemplate(content, buttonText, buttonUrl) {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6; color: #1e293b; margin: 0; padding: 0; background-color: #f8fafc; }
+            .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+            .header { background: #4f46e5; padding: 32px 40px; text-align: center; }
+            .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+            .content { padding: 40px; }
+            .footer { background: #f1f5f9; padding: 24px; text-align: center; color: #64748b; font-size: 13px; }
+            .btn { display: inline-block; background: #4f46e5; color: #ffffff !important; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 24px; transition: background 0.2s; }
+            .btn:hover { background: #4338ca; }
+            hr { border: 0; border-top: 1px solid #e2e8f0; margin: 32px 0; }
+            .meta { background: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; margin: 24px 0; }
+            .meta-item { margin-bottom: 8px; font-size: 14px; }
+            .meta-label { font-weight: 600; color: #64748b; margin-right: 8px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Academic Portal</h1>
+            </div>
+            <div class="content">
+                ${content}
+                ${buttonText && buttonUrl ? `<div style="text-align: center;"><a href="${buttonUrl}" class="btn">${buttonText}</a></div>` : ''}
+            </div>
+            <div class="footer">
+                &copy; ${new Date().getFullYear()} Unified Academic Portal. This is an automated notification.
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+}
+
 async function sendEmail(to, subject, html) {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.warn('Email skipped: SMTP credentials not set.');
@@ -333,7 +372,7 @@ async function sendEmail(to, subject, html) {
         });
 
         await transporter.sendMail({
-            from: `"EduPortal" <${process.env.EMAIL_USER}>`,
+            from: `"Academic Portal" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html
@@ -547,10 +586,18 @@ app.post('/evaluate', async (req, res) => {
                 await sendEmail(
                     student.email, 
                     `📝 Project Graded: ${student.title}`, 
-                    `<h3>Hello ${student.name},</h3>
-                     <p>Your project <b>"${student.title}"</b> has been evaluated.</p>
-                     <p><b>Final Score:</b> ${score}</p>
-                     <p>Log in to the EduPortal to view faculty comments.</p>`
+                    createEmailTemplate(
+                        `<h3>Evaluation Update</h3>
+                         <p>Hello <b>${student.name}</b>,</p>
+                         <p>Your project submission has been reviewed and graded.</p>
+                         <div class="meta">
+                            <div class="meta-item"><span class="meta-label">Project:</span> ${student.title}</div>
+                            <div class="meta-item" style="font-size: 20px;"><span class="meta-label">Final Score:</span> <b>${score} / 100</b></div>
+                         </div>
+                         <p>Log in to the dashboard to view detailed feedback and faculty comments.</p>`,
+                        "View My Results",
+                        "academic-project-subimission.vercel.app/dashboard"
+                    )
                 );
             }
         } catch (mailErr) { console.error('Grading email trigger failed:', mailErr); }
@@ -806,14 +853,21 @@ app.post('/announcements', async (req, res) => {
                     await sendEmail(
                         s.email, 
                         `📢 New Announcement: ${title}`, 
-                        `<h3>Hello ${s.name},</h3>
-                         <p>A new announcement was posted by <b>${facultyName}</b>:</p>
-                         <hr>
-                         <h4>${title}</h4>
-                         <p>${message}</p>
-                         ${deadline ? `<p><b>Deadline:</b> ${new Date(deadline).toLocaleString()}</p>` : ''}
-                         <hr>
-                         <p>Visit the Educational Portal for more details.</p>`
+                        createEmailTemplate(
+                            `<h3>New Announcement</h3>
+                             <p>Hello <b>${s.name}</b>,</p>
+                             <p>A new notice has been posted by <b>${facultyName}</b>:</p>
+                             
+                             <div class="meta" style="background: #eef2ff; border-color: #c7d2fe;">
+                                <h4 style="margin-top: 0; color: #3730a3;">${title}</h4>
+                                <p style="font-size: 15px; color: #312e81;">${message}</p>
+                                ${deadline ? `<hr style="margin: 16px 0; border-top-color: #c7d2fe;"><div class="meta-item"><span class="meta-label">📅 Deadline:</span> <b>${new Date(deadline).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}</b></div>` : ''}
+                             </div>
+                             
+                             <p>Please log in to the portal for more details or to submit any required files.</p>`,
+                            "View Announcement",
+                            "academic-project-subimission.vercel.app/announcements"
+                        )
                     );
                 }
             }
