@@ -587,11 +587,17 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
       .view-toggles .vt-icon { font-size: 1.25rem; }
       .view-toggles .vt-label { font-size: 0.7rem; display: block; }
 
-      /* Stats grid: 2 cols on mobile */
-      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
-      .stat-card { padding: 0.85rem; }
-      .stat-card .value { font-size: 1.5rem; }
-      .stat-icon { width: 38px; height: 38px; font-size: 1.3rem; }
+      /* Stats grid: 3 cols on mobile */
+      .stats-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 0.5rem; 
+        margin-bottom: 1.25rem; 
+      }
+      .stat-card { padding: 0.6rem 0.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+      .stat-card .value { font-size: 1.25rem; margin-bottom: 2px; }
+      .stat-card .label { font-size: 0.6rem; text-transform: uppercase; white-space: nowrap; }
+      .stat-icon { display: none; } /* Hide large icons on mobile stats to save space */
 
       /* Student stats: one row */
       .student-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 100%; }
@@ -613,6 +619,20 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
         flex: 1; white-space: nowrap; padding: 0.6rem 0.5rem; 
         font-size: 0.72rem; min-width: fit-content;
       }
+
+      /* Projects filter tabs: same fix */
+      .controls-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .tabs { 
+        width: 100%; display: flex; overflow-x: auto; 
+        scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 4px;
+        background: #e2e8f0; padding: 4px; border-radius: 10px;
+      }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tabs button { 
+        flex: 1; white-space: nowrap; padding: 0.6rem 0.75rem; 
+        font-size: 0.75rem; min-width: fit-content;
+      }
+      .search-wrapper { max-width: 100%; width: 100%; }
 
       /* Cards: 1 col */
       .grid-submissions { grid-template-columns: 1fr; }
