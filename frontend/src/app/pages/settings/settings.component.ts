@@ -100,25 +100,7 @@ import { ApiService } from '../../core/services/api.service';
               </button>
             </div>
 
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <div class="toggle-label">Compact Layout</div>
-                <div class="toggle-desc">Reduce padding for more content on screen</div>
-              </div>
-              <button class="toggle-switch" [class.on]="prefs.compactLayout" (click)="toggle('compactLayout')">
-                <span class="knob"></span>
-              </button>
-            </div>
 
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <div class="toggle-label">Reduce Animations</div>
-                <div class="toggle-desc">Minimize motion effects</div>
-              </div>
-              <button class="toggle-switch" [class.on]="prefs.reduceMotion" (click)="toggle('reduceMotion')">
-                <span class="knob"></span>
-              </button>
-            </div>
 
             <div class="form-group mt-4">
               <label>Accent Color</label>
