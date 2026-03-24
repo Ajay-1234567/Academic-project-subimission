@@ -154,7 +154,6 @@ import { AuthService } from '../../core/services/auth.service';
   `,
     styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
-     }
 
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
     h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; }
@@ -254,6 +253,19 @@ import { AuthService } from '../../core/services/auth.service';
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }
+
+    @media (max-width: 1024px) {
+      .main-layout { margin-left: 0; padding: 4.5rem 1rem 2rem; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      h1 { font-size: 1.6rem; }
+      .header-stats { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .stat-chip { min-width: 0; padding: 0.6rem 0.2rem; }
+      .chip-num { font-size: 1.2rem; }
+      .chip-lbl { font-size: 0.6rem; }
+      .form-card { padding: 1.5rem; }
+      .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .groups-grid { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class FacultyGroupsComponent implements OnInit {
