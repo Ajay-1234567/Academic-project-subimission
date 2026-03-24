@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -219,6 +220,7 @@ async function initDB() {
         try { await connection.query(`ALTER TABLE users ADD COLUMN branch VARCHAR(255) DEFAULT NULL`); } catch (e) { }
         try { await connection.query(`ALTER TABLE users ADD COLUMN section VARCHAR(255) DEFAULT NULL`); } catch (e) { }
         try { await connection.query(`ALTER TABLE users ADD COLUMN domain VARCHAR(255) DEFAULT NULL`); } catch (e) { }
+        try { await connection.query(`ALTER TABLE users ADD COLUMN emailNotifications BOOLEAN DEFAULT TRUE`); } catch (e) { }
 
         // Create Problem Statements Table (Real-world projects)
         await connection.query(`
@@ -276,6 +278,35 @@ if (!process.env.VERCEL) {
 }
 
 module.exports = app;
+
+// ---- EMAIL SYSTEM ----
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+async function sendEmail(to, subject, html) {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.warn('Email skipped: SMTP credentials not set.');
+        return;
+    }
+    try {
+        await transporter.sendMail({
+            from: `"EduPortal" <${process.env.EMAIL_USER}>`,
+            to,
+            subject,
+            html
+        });
+        console.log(`Email sent to ${to}: ${subject}`);
+    } catch (err) {
+        console.error('Email failed:', err);
+    }
+}
 
 // Auth Route
 app.post('/login', async (req, res) => {
@@ -466,6 +497,28 @@ app.post('/evaluate', async (req, res) => {
         );
 
         const [updatedProject] = await pool.query('SELECT * FROM projects WHERE id = ?', [projectId]);
+        
+        // ---- EMAIL ALERT ----
+        try {
+            const [[student]] = await pool.query(`
+                SELECT u.email, u.name, u.emailNotifications, p.title 
+                FROM projects p 
+                JOIN users u ON p.studentId = u.id 
+                WHERE p.id = ?
+            `, [projectId]);
+            
+            if (student && student.email && student.emailNotifications) {
+                await sendEmail(
+                    student.email, 
+                    `📝 Project Graded: ${student.title}`, 
+                    `<h3>Hello ${student.name},</h3>
+                     <p>Your project <b>"${student.title}"</b> has been evaluated.</p>
+                     <p><b>Final Score:</b> ${score}</p>
+                     <p>Log in to the EduPortal to view faculty comments.</p>`
+                );
+            }
+        } catch (mailErr) { console.error('Grading email trigger failed:', mailErr); }
+
         res.json(updatedProject[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -689,6 +742,28 @@ app.post('/announcements', async (req, res) => {
             [title, message, deadline || null, facultyId, facultyName]
         );
         const [newRow] = await pool.query('SELECT * FROM announcements WHERE id = ?', [result.insertId]);
+        
+        // ---- EMAIL ALERT ----
+        try {
+            const [students] = await pool.query("SELECT email, name FROM users WHERE role = 'student' AND emailNotifications = TRUE");
+            for (let s of students) {
+                if (s.email) {
+                    await sendEmail(
+                        s.email, 
+                        `📢 New Announcement: ${title}`, 
+                        `<h3>Hello ${s.name},</h3>
+                         <p>A new announcement was posted by <b>${facultyName}</b>:</p>
+                         <hr>
+                         <h4>${title}</h4>
+                         <p>${message}</p>
+                         ${deadline ? `<p><b>Deadline:</b> ${new Date(deadline).toLocaleString()}</p>` : ''}
+                         <hr>
+                         <p>Visit the Educational Portal for more details.</p>`
+                    );
+                }
+            }
+        } catch (mailErr) { console.error('Announcement email trigger failed:', mailErr); }
+
         res.status(201).json(newRow[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
