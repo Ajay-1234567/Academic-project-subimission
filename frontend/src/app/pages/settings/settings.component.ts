@@ -377,6 +377,9 @@ export class SettingsComponent implements OnInit {
 
   saveNotifPrefs() {
     localStorage.setItem('notifPrefs', JSON.stringify(this.notifPrefs));
+    if (this.user?.id) {
+      this.apiService.updateEmailPreference(this.user.id, this.notifPrefs.email).subscribe();
+    }
   }
 
   // ─── Apply Theme ─────────────────────────────────────────────────────────────

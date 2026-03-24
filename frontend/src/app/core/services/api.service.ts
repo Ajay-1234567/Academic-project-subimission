@@ -168,5 +168,9 @@ export class ApiService {
     deleteProblemStatement(id: number): Observable<any> {
         return this.http.delete(`${this.apiUrl}/problem-statements/${id}`);
     }
+
+    updateEmailPreference(id: number, enabled: boolean): Observable<any> {
+        return this.http.put(`${this.apiUrl}/users/${id}/email-pref`, { emailNotifications: enabled });
+    }
 }
 
