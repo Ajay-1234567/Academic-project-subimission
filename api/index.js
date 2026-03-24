@@ -29,8 +29,9 @@ app.use(async (req, res, next) => {
     } catch (err) {
         console.error('DB middleware failed:', err);
         res.status(500).json({ 
-            error: 'Database connection failed. Please check if your MySQL server is running and database connection strings/environment variables (MYSQLHOST, MYSQLUSER, MYSQLPASSWORD, MYSQLDATABASE) are correctly set in the backend environment.',
-            details: err.message
+            error: 'Database connection failed.',
+            details: err.message,
+            code: err.code
         });
     }
 });
@@ -43,7 +44,8 @@ const dbConfig = {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    ssl: (process.env.DB_SSL === 'true' || process.env.DB_SSL === 'REQUIRED') ? {
+    connectTimeout: 10000,
+    ssl: (String(process.env.DB_SSL).toLowerCase() === 'true' || process.env.DB_SSL === 'REQUIRED') ? {
         minVersion: 'TLSv1.2',
         rejectUnauthorized: false
     } : undefined
@@ -51,217 +53,213 @@ const dbConfig = {
 
 const dbName = (process.env.MYSQLDATABASE || process.env.DB_NAME || 'academic_portal').toString().trim();
 
-
 let pool;
 let initPromise = null;
 
 async function initDB() {
     if (initPromise) return initPromise;
+    console.log('--- Initializing Database ---');
     initPromise = (async () => {
-    try {
-        const tempConnection = await mysql.createConnection({
-            host: dbConfig.host,
-            port: dbConfig.port,
-            user: dbConfig.user,
-            password: dbConfig.password,
-            ssl: dbConfig.ssl
-        });
-        await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
-        await tempConnection.end();
+        try {
+            // 1. Try to connect directly to the target database
+            pool = mysql.createPool({ ...dbConfig, database: dbName });
+            
+            let connection;
+            try {
+                connection = await pool.getConnection();
+            } catch (err) {
+                // 2. If DB doesn't exist, try to create it
+                if (err.code === 'ER_BAD_DB_ERROR') {
+                    console.log(`Database ${dbName} not found. Creating...`);
+                    const tempConn = await mysql.createConnection({ ...dbConfig });
+                    await tempConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
+                    await tempConn.end();
+                    connection = await pool.getConnection();
+                } else {
+                    throw err;
+                }
+            }
 
-        pool = mysql.createPool({
-            ...dbConfig,
-            database: dbName
-        });
+            try {
+                // 3. Fast check: if 'users' table exists, skip the rest
+                const [rows] = await connection.query("SHOW TABLES LIKE 'users'");
+                if (rows.length > 0) {
+                    console.log('Database already initialized. Skipping migrations.');
+                    return;
+                }
 
-        const connection = await pool.getConnection();
+                console.log('Running database migrations...');
+                // Create Users Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS users (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        username VARCHAR(255) DEFAULT NULL,
+                        password VARCHAR(255) NOT NULL,
+                        role ENUM('student', 'faculty', 'admin') NOT NULL,
+                        name VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) DEFAULT NULL UNIQUE,
+                        department VARCHAR(255) DEFAULT NULL,
+                        subject VARCHAR(255) DEFAULT NULL,
+                        assignedFacultyId INT DEFAULT NULL,
+                        academicYear VARCHAR(20) DEFAULT NULL,
+                        rollNumber VARCHAR(50) DEFAULT NULL,
+                        branch VARCHAR(255) DEFAULT NULL,
+                        section VARCHAR(255) DEFAULT NULL,
+                        emailNotifications BOOLEAN DEFAULT TRUE,
+                        domain VARCHAR(255) DEFAULT NULL
+                    )
+                `);
 
-        // Create Users Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                username VARCHAR(255) NOT NULL UNIQUE,
-                password VARCHAR(255) NOT NULL,
-                role ENUM('student', 'faculty', 'admin') NOT NULL,
-                name VARCHAR(255) NOT NULL
-            )
-        `);
+                // Create Projects Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS projects (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        title VARCHAR(255) NOT NULL,
+                        abstract TEXT,
+                        repoUrl VARCHAR(255),
+                        studentId INT,
+                        facultyId INT,
+                        status VARCHAR(50) DEFAULT 'Submitted',
+                        score INT,
+                        submittedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        semester VARCHAR(10) DEFAULT NULL,
+                        subject VARCHAR(255) DEFAULT NULL,
+                        projectType ENUM('solo', 'group') DEFAULT 'solo',
+                        groupId INT DEFAULT NULL,
+                        submitterName VARCHAR(255) DEFAULT NULL,
+                        FOREIGN KEY (studentId) REFERENCES users(id),
+                        FOREIGN KEY (facultyId) REFERENCES users(id)
+                    )
+                `);
 
-        // Create Projects Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS projects (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                abstract TEXT,
-                repoUrl VARCHAR(255),
-                studentId INT,
-                facultyId INT,
-                status VARCHAR(50) DEFAULT 'Submitted',
-                score INT,
-                submittedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (studentId) REFERENCES users(id),
-                FOREIGN KEY (facultyId) REFERENCES users(id)
-            )
-        `);
+                // Create Evaluations Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS evaluations (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        projectId INT,
+                        facultyId INT,
+                        comments TEXT,
+                        score INT,
+                        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (projectId) REFERENCES projects(id),
+                        FOREIGN KEY (facultyId) REFERENCES users(id)
+                    )
+                `);
 
-        // Create Evaluations Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS evaluations (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                projectId INT,
-                facultyId INT,
-                comments TEXT,
-                score INT,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (projectId) REFERENCES projects(id),
-                FOREIGN KEY (facultyId) REFERENCES users(id)
-            )
-        `);
+                // Create Announcements Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS announcements (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        title VARCHAR(255) NOT NULL,
+                        message TEXT NOT NULL,
+                        deadline DATETIME,
+                        facultyId INT,
+                        facultyName VARCHAR(255),
+                        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (facultyId) REFERENCES users(id)
+                    )
+                `);
 
-        // Create Announcements Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS announcements (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                message TEXT NOT NULL,
-                deadline DATETIME,
-                facultyId INT,
-                facultyName VARCHAR(255),
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (facultyId) REFERENCES users(id)
-            )
-        `);
+                // Create Subjects Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS subjects (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        department VARCHAR(255),
+                        branch VARCHAR(255) DEFAULT NULL,
+                        domain VARCHAR(255) DEFAULT NULL,
+                        semester VARCHAR(20),
+                        facultyId INT,
+                        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (facultyId) REFERENCES users(id)
+                    )
+                `);
 
-        // Create Subjects Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS subjects (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                department VARCHAR(255),
-                branch VARCHAR(255) DEFAULT NULL,
-                domain VARCHAR(255) DEFAULT NULL,
-                semester VARCHAR(20),
-                facultyId INT,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (facultyId) REFERENCES users(id)
-            )
-        `);
+                // Create Student-Faculty mapping table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS student_faculty (
+                        studentId INT NOT NULL,
+                        facultyId INT NOT NULL,
+                        subject VARCHAR(500) DEFAULT NULL,
+                        PRIMARY KEY (studentId, facultyId),
+                        FOREIGN KEY (studentId) REFERENCES users(id),
+                        FOREIGN KEY (facultyId) REFERENCES users(id)
+                    )
+                `);
 
-        // Add columns to subjects if not exist
-        try { await connection.query(`ALTER TABLE subjects ADD COLUMN branch VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE subjects ADD COLUMN domain VARCHAR(255) DEFAULT NULL`); } catch (e) { }
+                // Create Student Groups Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS student_groups (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        groupNumber VARCHAR(50) NOT NULL,
+                        groupName VARCHAR(255),
+                        facultyId INT,
+                        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (facultyId) REFERENCES users(id)
+                    )
+                `);
 
-        // Create Student-Faculty mapping table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS student_faculty (
-                studentId INT NOT NULL,
-                facultyId INT NOT NULL,
-                subject VARCHAR(500) DEFAULT NULL,
-                PRIMARY KEY (studentId, facultyId),
-                FOREIGN KEY (studentId) REFERENCES users(id),
-                FOREIGN KEY (facultyId) REFERENCES users(id)
-            )
-        `);
-        // Add subject column to existing student_faculty tables
-        try { await connection.query(`ALTER TABLE student_faculty ADD COLUMN subject VARCHAR(500) DEFAULT NULL`); } catch (e) { }
+                // Create Group Members Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS group_members (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        groupId INT NOT NULL,
+                        studentId INT NOT NULL,
+                        UNIQUE KEY unique_student_group (studentId, groupId),
+                        FOREIGN KEY (groupId) REFERENCES student_groups(id) ON DELETE CASCADE,
+                        FOREIGN KEY (studentId) REFERENCES users(id)
+                    )
+                `);
 
-        // Create Student Groups Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS student_groups (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                groupNumber VARCHAR(50) NOT NULL,
-                groupName VARCHAR(255),
-                facultyId INT,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (facultyId) REFERENCES users(id)
-            )
-        `);
+                // Create Sections Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS sections (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        graduationYear VARCHAR(20) NOT NULL,
+                        department VARCHAR(255) DEFAULT 'B.Tech',
+                        branches TEXT,
+                        domain VARCHAR(255) DEFAULT NULL,
+                        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                `);
 
-        // Create Group Members Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS group_members (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                groupId INT NOT NULL,
-                studentId INT NOT NULL,
-                UNIQUE KEY unique_student_group (studentId, groupId),
-                FOREIGN KEY (groupId) REFERENCES student_groups(id) ON DELETE CASCADE,
-                FOREIGN KEY (studentId) REFERENCES users(id)
-            )
-        `);
+                // Create Problem Statements Table
+                await connection.query(`
+                    CREATE TABLE IF NOT EXISTS problem_statements (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        title VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        branch VARCHAR(255),
+                        domain VARCHAR(255),
+                        difficulty ENUM('Beginner', 'Intermediate', 'Advanced') DEFAULT 'Intermediate',
+                        createdBy INT,
+                        assignedToFacultyId INT,
+                        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (createdBy) REFERENCES users(id),
+                        FOREIGN KEY (assignedToFacultyId) REFERENCES users(id) ON DELETE SET NULL
+                    )
+                `);
 
-        // Add columns to users if not exist
-        try { await connection.query(`ALTER TABLE users ADD COLUMN department VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN subject VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN assignedFacultyId INT DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN email VARCHAR(255) DEFAULT NULL UNIQUE`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN academicYear VARCHAR(20) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN rollNumber VARCHAR(50) DEFAULT NULL`); } catch (e) { }
+                // Insert default admin user if no admin exists
+                const [adminCount] = await connection.query(`SELECT COUNT(*) as count FROM users WHERE role = 'admin'`);
+                if (adminCount[0].count === 0) {
+                    await connection.query(`
+                        INSERT INTO users (email, username, password, role, name) 
+                        VALUES ('Admin123@gmail.com', 'Admin123@gmail.com', 'admin123', 'admin', 'System Admin')
+                    `);
+                    console.log('Default admin user created.');
+                }
 
-        // Add columns to projects if not exist
-        try { await connection.query(`ALTER TABLE projects ADD COLUMN semester VARCHAR(10) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE projects ADD COLUMN subject VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE projects ADD COLUMN projectType ENUM('solo', 'group') DEFAULT 'solo'`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE projects ADD COLUMN groupId INT DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE projects ADD COLUMN submitterName VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-
-        // Create Sections Table
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS sections (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                graduationYear VARCHAR(20) NOT NULL,
-                department VARCHAR(255) DEFAULT 'B.Tech',
-                branches TEXT,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        // Add branch, section and domain to users
-        try { await connection.query(`ALTER TABLE users ADD COLUMN branch VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN section VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN emailNotifications BOOLEAN DEFAULT TRUE`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users ADD COLUMN domain VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-
-        // Create Problem Statements Table (Real-world projects)
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS problem_statements (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                description TEXT,
-                branch VARCHAR(255),
-                domain VARCHAR(255),
-                difficulty ENUM('Beginner', 'Intermediate', 'Advanced') DEFAULT 'Intermediate',
-                createdBy INT,
-                assignedToFacultyId INT,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (createdBy) REFERENCES users(id),
-                FOREIGN KEY (assignedToFacultyId) REFERENCES users(id) ON DELETE SET NULL
-            )
-        `);
-
-        // Add domain to sections
-        try { await connection.query(`ALTER TABLE sections ADD COLUMN domain VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-
-        // Make username nullable for email-based registration
-        try { await connection.query(`ALTER TABLE users MODIFY COLUMN username VARCHAR(255) DEFAULT NULL`); } catch (e) { }
-        try { await connection.query(`ALTER TABLE users DROP INDEX username`); } catch (e) { }
-
-        // Insert default admin user if no admin exists
-        const [adminCount] = await connection.query(`SELECT COUNT(*) as count FROM users WHERE role = 'admin'`);
-        if (adminCount[0].count === 0) {
-            await connection.query(`
-                INSERT INTO users (email, username, password, role, name) 
-                VALUES ('Admin123@gmail.com', 'Admin123@gmail.com', 'admin123', 'admin', 'System Admin')
-            `);
-            console.log('Default admin user created.');
+                console.log('Database initialized successfully.');
+            } finally {
+                connection.release();
+            }
+        } catch (err) {
+            console.error('Database initialization failed:', err);
+            initPromise = null; // Re-attempt on next request
+            throw err;
         }
-
-        connection.release();
-        console.log('Database initialized successfully.');
-    } catch (err) {
-        console.error('Database initialization failed:', err);
-        throw err;
-    }
     })();
     return initPromise;
 }
@@ -1297,6 +1295,16 @@ app.delete('/problem-statements/:id', async (req, res) => {
 // Legacy remove student route
 app.delete('/faculty/students/:studentId', async (req, res) => {
     res.status(400).json({ message: "Use the specific route DELETE /faculty/:facultyId/students/:studentId" });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('SERVER ERROR:', err);
+    res.status(500).json({ 
+        error: 'An internal server error occurred.',
+        message: err.message,
+        path: req.path
+    });
 });
 
 module.exports = app;
