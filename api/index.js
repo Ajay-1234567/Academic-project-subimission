@@ -1211,17 +1211,31 @@ app.get('/sections', async (req, res) => {
     try {
         let query = 'SELECT * FROM sections WHERE 1=1';
         let params = [];
-        if (department) { query += ' AND department = ?'; params.push(department); }
-        if (graduationYear) { query += ' AND graduationYear = ?'; params.push(graduationYear); }
-        if (branch) { query += ' AND branches LIKE ?'; params.push(`%${branch}%`); }
-        if (domain) {
-            query += ' AND (domain = ? OR domain IS NULL OR domain = "" OR domain = "None / General")';
-            params.push(domain);
+
+        if (department) {
+            query += ' AND LOWER(department) = LOWER(?)';
+            params.push(department.trim());
+        }
+        if (graduationYear) {
+            query += ' AND graduationYear = ?';
+            params.push(graduationYear.toString().trim());
+        }
+        if (branch) {
+            query += ' AND LOWER(branches) LIKE LOWER(?)';
+            params.push(`%${branch.trim()}%`);
+        }
+        if (domain && domain !== 'None / General') {
+            query += ' AND (LOWER(domain) = LOWER(?) OR domain IS NULL OR domain = "" OR domain = "None / General")';
+            params.push(domain.toString().trim());
+        } else if (!domain || domain === 'None / General') {
+            query += ' AND (domain IS NULL OR domain = "" OR domain = "None / General")';
         }
 
         const [rows] = await pool.query(query, params);
         res.json(rows);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.post('/sections', async (req, res) => {
