@@ -340,6 +340,18 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     .no-subjs { font-size: 0.85rem; color: #94a3b8; font-style: italic; padding: 0.5rem; }
     .text-muted { color: #94a3b8; font-size: 0.8rem; }
     .selected-summary { font-size: 0.8rem; color: var(--primary); margin-top: 0.4rem; font-weight: 500; }
+
+    @media (max-width: 1024px) {
+      .main-layout { margin-left: 0; padding: 4.5rem 1rem 2rem; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      h1 { font-size: 1.6rem; }
+      .header-stats { width: 100%; }
+      .stat-chip { flex: 1; padding: 0.6rem; }
+      .form-card { padding: 1.5rem; }
+      .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .search-row { flex-direction: column; align-items: flex-start; }
+      .search-wrapper { max-width: 100%; width: 100%; }
+    }
   `]
 })
 export class FacultyStudentsComponent implements OnInit {
