@@ -245,7 +245,7 @@ const BRANCH_DATA = [
     
     .assigned-faculty { display: flex; flex-wrap: wrap; gap: 4px; }
     .faculty-tag { background: #f0f9ff; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; border: 1px solid #bae6fd; }
-    .no-faculty { color: #94a3b8; font-style: italic; font-size: 0.8rem; }
+    .no-faculty { color: var(--text-secondary); font-style: italic; font-size: 0.8rem; }
   `]
 
 })

@@ -363,14 +363,14 @@ import { ApiService } from '../../core/services/api.service';
   `,
   styles: [`
     :host { display: block; }
-    .main-layout { margin-left: 250px; padding: 2rem; min-height: 100vh; background: #f8fafc; }
+    .main-layout { margin-left: 250px; padding: 2rem; min-height: 100vh; background: var(--background); }
     @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
 
     /* Header */
-    .page-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
+    .page-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
     .header-icon { font-size: 2.5rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 16px; flex-shrink: 0; }
-    .page-header h1 { font-size: 1.8rem; font-weight: 700; color: #1e293b; margin: 0 0 0.25rem; }
-    .page-header p { color: #64748b; margin: 0; font-size: 0.95rem; }
+    .page-header h1 { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.25rem; }
+    .page-header p { color: var(--text-secondary); margin: 0; font-size: 0.95rem; }
     .role-badge { margin-left: auto; padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
     .role-badge.student { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
     .role-badge.faculty { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
@@ -388,11 +388,11 @@ import { ApiService } from '../../core/services/api.service';
     @media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr; } }
 
     /* Card */
-    .settings-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .settings-card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
     .card-heading { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
-    .card-icon { font-size: 1.5rem; background: #f8fafc; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 10px; flex-shrink: 0; border: 1px solid #e2e8f0; }
-    .card-heading h2 { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin: 0 0 0.2rem; }
-    .card-heading p  { font-size: 0.82rem; color: #94a3b8; margin: 0; }
+    .card-icon { font-size: 1.5rem; background: var(--background); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 10px; flex-shrink: 0; border: 1px solid var(--border); }
+    .card-heading h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.2rem; }
+    .card-heading p  { font-size: 0.82rem; color: var(--text-secondary); margin: 0; }
 
     /* Role Card Accents */
     .role-card.student { border-top: 3px solid #3b82f6; }
@@ -404,8 +404,8 @@ import { ApiService } from '../../core/services/api.service';
     .form-group { margin-bottom: 1.25rem; }
     .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
     .input-wrap { position: relative; }
-    .field { width: 100%; padding: 0.7rem 2.8rem 0.7rem 0.9rem; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; color: #1e293b; background: #f8fafc; transition: border-color 0.2s; box-sizing: border-box; font-family: inherit; }
-    .field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); background: white; }
+    .field { width: 100%; padding: 0.7rem 2.8rem 0.7rem 0.9rem; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; color: var(--text-primary); background: var(--background); transition: border-color 0.2s; box-sizing: border-box; font-family: inherit; }
+    .field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); background: var(--surface); }
     .field.mismatch { border-color: #ef4444; }
     .eye-btn { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; font-size: 1rem; }
     .mt-4 { margin-top: 1.25rem; }
@@ -427,25 +427,25 @@ import { ApiService } from '../../core/services/api.service';
     .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 0; border-bottom: 1px solid #f8fafc; }
     .toggle-row:last-of-type { border-bottom: none; }
     .toggle-info { flex: 1; padding-right: 1.5rem; }
-    .toggle-label { font-size: 0.92rem; font-weight: 600; color: #1e293b; }
-    .toggle-desc  { font-size: 0.8rem; color: #94a3b8; margin-top: 0.1rem; }
+    .toggle-label { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
+    .toggle-desc  { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.1rem; }
 
-    .toggle-switch { width: 48px; height: 26px; background: #e2e8f0; border-radius: 99px; border: none; cursor: pointer; position: relative; transition: background 0.3s; flex-shrink: 0; padding: 0; }
+    .toggle-switch { width: 48px; height: 26px; background: var(--border); border-radius: 99px; border: none; cursor: pointer; position: relative; transition: background 0.3s; flex-shrink: 0; padding: 0; }
     .toggle-switch.on { background: #6366f1; }
-    .toggle-switch .knob { position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+    .toggle-switch .knob { position: absolute; width: 20px; height: 20px; background: var(--surface); border-radius: 50%; top: 3px; left: 3px; transition: transform 0.3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
     .toggle-switch.on .knob { transform: translateX(22px); }
 
     /* Accent Colors */
     .color-grid { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .color-dot { width: 32px; height: 32px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: white; font-weight: bold; transition: transform 0.2s; }
     .color-dot:hover { transform: scale(1.15); }
-    .color-dot.selected { border-color: #1e293b; transform: scale(1.1); box-shadow: 0 0 0 2px white, 0 0 0 4px #6366f1; }
+    .color-dot.selected { border-color: var(--text-primary); transform: scale(1.1); box-shadow: 0 0 0 2px white, 0 0 0 4px #6366f1; }
 
     /* Danger Zone */
     .danger-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #fef2f2; gap: 1rem; }
     .danger-row:last-child { border-bottom: none; }
-    .danger-title { font-size: 0.92rem; font-weight: 600; color: #1e293b; }
-    .danger-desc  { font-size: 0.8rem; color: #94a3b8; margin-top: 0.1rem; }
+    .danger-title { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
+    .danger-desc  { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.1rem; }
 
     /* Buttons */
     button { cursor: pointer; }
@@ -453,8 +453,8 @@ import { ApiService } from '../../core/services/api.service';
     .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,0.4); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .btn-secondary { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem 1.25rem; background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.86rem; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; margin-top: 1rem; }
-    .btn-secondary:hover { background: #f1f5f9; border-color: #cbd5e1; color: #1e293b; }
+    .btn-secondary { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem 1.25rem; background: var(--background); color: #475569; border: 1px solid var(--border); border-radius: 10px; font-size: 0.86rem; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; margin-top: 1rem; }
+    .btn-secondary:hover { background: #f1f5f9; border-color: var(--border); color: var(--text-primary); }
 
     .btn-danger { padding: 0.6rem 1rem; background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
     .btn-danger:hover { background: #ef4444; color: white; }

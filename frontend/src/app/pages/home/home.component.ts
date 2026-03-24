@@ -210,8 +210,8 @@ import { HttpClient } from '@angular/common/http';
 
     .page-wrapper {
       font-family: 'Inter', sans-serif;
-      background: #f8fafc;
-      color: #1e293b;
+      background: var(--background);
+      color: var(--text-primary);
       min-height: 100vh;
     }
 
@@ -220,7 +220,7 @@ import { HttpClient } from '@angular/common/http';
       position: sticky; top: 0; z-index: 100;
       background: rgba(255,255,255,0.85);
       backdrop-filter: blur(12px);
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border);
     }
     .nav-container {
       max-width: 1200px; margin: 0 auto;
@@ -235,7 +235,7 @@ import { HttpClient } from '@angular/common/http';
     .nav-link { color: #475569; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
     .nav-link:hover { color: #6366f1; }
     .nav-actions { display: flex; gap: 1rem; align-items: center; }
-    .btn-outline-nav { padding: 0.5rem 1.2rem; border: 1.5px solid #cbd5e1; border-radius: 8px; text-decoration: none; color: #475569; font-weight: 500; transition: all 0.2s; }
+    .btn-outline-nav { padding: 0.5rem 1.2rem; border: 1.5px solid var(--border); border-radius: 8px; text-decoration: none; color: #475569; font-weight: 500; transition: all 0.2s; }
     .btn-outline-nav:hover { border-color: #6366f1; color: #6366f1; }
     .btn-cta { padding: 0.5rem 1.4rem; background: #6366f1; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; }
     .btn-cta:hover { background: #4f46e5; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
@@ -260,7 +260,7 @@ import { HttpClient } from '@angular/common/http';
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .hero-sub {
-      font-size: 1.15rem; color: #64748b; line-height: 1.7;
+      font-size: 1.15rem; color: var(--text-secondary); line-height: 1.7;
       max-width: 600px; margin: 0 auto 2.5rem;
     }
     .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3.5rem; }
@@ -271,21 +271,21 @@ import { HttpClient } from '@angular/common/http';
       box-shadow: 0 8px 20px rgba(99,102,241,0.3);
     }
     .btn-primary-lg:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(99,102,241,0.4); }
-    .btn-primary-lg.white { background: white; color: #6366f1; }
+    .btn-primary-lg.white { background: var(--surface); color: #6366f1; }
     .btn-ghost { padding: 0.9rem 1.8rem; color: #6366f1; text-decoration: none; font-weight: 600; border: 1.5px solid #c7d2fe; border-radius: 10px; transition: all 0.2s; }
     .btn-ghost:hover { background: #ede9fe; }
 
     .hero-stats {
       display: flex; justify-content: center; align-items: center;
       gap: 2rem; flex-wrap: wrap;
-      background: white; border: 1px solid #e2e8f0;
+      background: var(--surface); border: 1px solid var(--border);
       padding: 1.5rem 3rem; border-radius: 16px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     }
     .stat-pill { text-align: center; }
     .stat-num { display: block; font-size: 1.8rem; font-weight: 800; color: #6366f1; }
-    .stat-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
-    .divider-v { width: 1px; height: 40px; background: #e2e8f0; }
+    .stat-label { font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
+    .divider-v { width: 1px; height: 40px; background: var(--border); }
 
     /* ── SECTION COMMON ── */
     .section-label {
@@ -293,7 +293,7 @@ import { HttpClient } from '@angular/common/http';
       color: #6366f1; margin-bottom: 0.75rem; text-transform: uppercase;
     }
     .section-title { text-align: center; font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-bottom: 0.75rem; }
-    .section-sub { text-align: center; color: #64748b; font-size: 1.05rem; max-width: 550px; margin: 0 auto 3rem; }
+    .section-sub { text-align: center; color: var(--text-secondary); font-size: 1.05rem; max-width: 550px; margin: 0 auto 3rem; }
 
     /* ── FEATURES ── */
     .features-section {
@@ -304,13 +304,13 @@ import { HttpClient } from '@angular/common/http';
       display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;
     }
     .feature-card {
-      background: white; border: 1px solid #e2e8f0; border-radius: 16px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
       padding: 2rem; transition: all 0.25s;
     }
     .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); border-color: #c7d2fe; }
     .feature-icon { width: 52px; height: 52px; border-radius: 12px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
     .feature-card h3 { font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.6rem; }
-    .feature-card p { color: #64748b; font-size: 0.95rem; line-height: 1.6; }
+    .feature-card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; }
 
     /* ── HOW IT WORKS ── */
     .how-section {
@@ -330,7 +330,7 @@ import { HttpClient } from '@angular/common/http';
       backdrop-filter: blur(10px);
     }
     .step-number {
-      width: 44px; height: 44px; background: white; color: #6366f1;
+      width: 44px; height: 44px; background: var(--surface); color: #6366f1;
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
       font-weight: 800; font-size: 1.2rem; margin: 0 auto 1rem;
     }
@@ -347,8 +347,8 @@ import { HttpClient } from '@angular/common/http';
       display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;
     }
     .role-card {
-      background: white; border-radius: 16px; padding: 2.5rem;
-      border: 1px solid #e2e8f0; transition: all 0.25s;
+      background: var(--surface); border-radius: 16px; padding: 2.5rem;
+      border: 1px solid var(--border); transition: all 0.25s;
     }
     .role-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); }
     .role-card.student { border-top: 4px solid #6366f1; }
@@ -368,11 +368,11 @@ import { HttpClient } from '@angular/common/http';
     }
     .cta-content { max-width: 600px; margin: 0 auto; }
     .cta-content h2 { font-size: 2rem; font-weight: 800; color: white; margin-bottom: 1rem; }
-    .cta-content p { color: #94a3b8; margin-bottom: 2rem; font-size: 1.05rem; }
+    .cta-content p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.05rem; }
 
     /* ── FOOTER ── */
     .footer {
-      background: #0f172a; padding: 4rem 2rem 2rem; color: #94a3b8;
+      background: #0f172a; padding: 4rem 2rem 2rem; color: var(--text-secondary);
     }
     .footer-grid {
       max-width: 1200px; margin: 0 auto;
@@ -385,7 +385,7 @@ import { HttpClient } from '@angular/common/http';
     .footer-brand .logo-text { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .footer-col h4 { color: white; font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; }
     .footer-col { display: flex; flex-direction: column; gap: 0.6rem; }
-    .footer-col a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .footer-col a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
     .footer-col a:hover { color: #c7d2fe; }
     .footer-bottom {
       max-width: 1200px; margin: 0 auto;

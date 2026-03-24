@@ -153,7 +153,7 @@ import { RouterLink } from '@angular/router';
     /* ── RIGHT PANEL ─────────────────────────────────────────── */
     .right-panel {
       flex: 1;
-      background: #f8fafc;
+      background: var(--background);
       /* On mobile, don't use flex-center — allow natural scroll instead */
       display: flex; align-items: center; justify-content: center;
       padding: 2rem;
@@ -161,14 +161,14 @@ import { RouterLink } from '@angular/router';
     }
     .form-card {
       width: 100%; max-width: 420px;
-      background: white; border-radius: 20px;
+      background: var(--surface); border-radius: 20px;
       padding: 2.5rem;
       box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
     }
     .form-header { margin-bottom: 1.5rem; }
     .form-header h1 { font-size: 1.7rem; font-weight: 800; color: #0f172a; margin-bottom: 0.4rem; }
-    .form-header p { color: #64748b; font-size: 0.9rem; }
+    .form-header p { color: var(--text-secondary); font-size: 0.9rem; }
 
     /* ── Role Tabs ───────────────────────────────────────────── */
     .role-tabs {
@@ -188,7 +188,7 @@ import { RouterLink } from '@angular/router';
     .role-tabs button .tab-icon { font-size: 1.3rem; line-height: 1; }
     .role-tabs button .tab-label { font-size: 0.73rem; font-weight: 700; letter-spacing: 0.3px; }
     .role-tabs button.active {
-      background: white; color: #4f46e5;
+      background: var(--surface); color: #4f46e5;
       box-shadow: 0 2px 8px rgba(99,102,241,0.25);
     }
     .role-tabs button:not(.active):hover { background: rgba(255,255,255,0.5); }
@@ -210,12 +210,12 @@ import { RouterLink } from '@angular/router';
       width: 100%; padding: 0.8rem 1rem;
       border: 1.5px solid #d1d5db; border-radius: 10px;
       font-size: 1rem; /* 1rem prevents iOS auto-zoom on focus! */
-      color: #1e293b; background: white;
+      color: var(--text-primary); background: var(--surface);
       transition: border-color 0.2s, box-shadow 0.2s;
       -webkit-appearance: none; /* removes iOS inner shadow */
     }
     .field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
-    .field::placeholder { color: #94a3b8; }
+    .field::placeholder { color: var(--text-secondary); }
     /* Extra padding-right for password field so text doesn't overlap toggle */
     .pw-wrap .field { padding-right: 2.8rem; }
 
@@ -243,11 +243,11 @@ import { RouterLink } from '@angular/router';
     /* ── Footer Links ─────────────────────────────────────────── */
     .form-footer {
       display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-      margin-top: 1.25rem; font-size: 0.875rem; color: #64748b;
+      margin-top: 1.25rem; font-size: 0.875rem; color: var(--text-secondary);
     }
     .form-footer a { color: #6366f1; font-weight: 600; text-decoration: none; }
     .form-footer a:hover { text-decoration: underline; }
-    .back-home { color: #94a3b8 !important; font-weight: 500 !important; font-size: 0.85rem; }
+    .back-home { color: var(--text-secondary) !important; font-weight: 500 !important; font-size: 0.85rem; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.4s ease; }

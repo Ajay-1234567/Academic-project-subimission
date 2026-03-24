@@ -90,7 +90,7 @@ import { AuthService } from '../../core/services/auth.service';
     </div>
   `,
   styles: [`
-    .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
+    .main-layout { margin-left: 250px; padding: 2rem; background: var(--background); min-height: 100vh; }
 
     /* Header */
     .page-header { 
@@ -98,14 +98,14 @@ import { AuthService } from '../../core/services/auth.service';
       margin-bottom: 3rem; flex-wrap: wrap; gap: 2rem; 
     }
     .header-content { flex: 1; min-width: 300px; }
-    h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; letter-spacing: -0.5px; }
-    .page-header p { color: #64748b; margin: 0; font-size: 1rem; }
+    h1 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem; letter-spacing: -0.5px; }
+    .page-header p { color: var(--text-secondary); margin: 0; font-size: 1rem; }
 
     /* Form Card */
     .form-card { 
       padding: 2.5rem; margin-bottom: 3rem; 
-      background: white; border-radius: 12px;
-      border: 1px solid #e2e8f0;
+      background: var(--surface); border-radius: 12px;
+      border: 1px solid var(--border);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
     .form-title { margin: 0 0 1.5rem; color: var(--primary); font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; }
@@ -116,18 +116,18 @@ import { AuthService } from '../../core/services/auth.service';
     label { display: block; margin-bottom: 0.5rem; color: #334155; font-size: 0.9rem; font-weight: 500; }
     
     .glass-input { 
-      width: 100%; padding: 0.75rem 1rem; background: #fff;
-      border: 1px solid #cbd5e1; border-radius: 6px;
-      color: #1e293b; font-size: 0.95rem; box-sizing: border-box; 
+      width: 100%; padding: 0.75rem 1rem; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text-primary); font-size: 0.95rem; box-sizing: border-box; 
       transition: all 0.2s; font-family: inherit;
     }
     .glass-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-    .glass-input::placeholder { color: #94a3b8; }
+    .glass-input::placeholder { color: var(--text-secondary); }
     textarea.glass-input { resize: vertical; min-height: 100px; }
 
     .date-time-row { display: flex; gap: 0.5rem; }
     .time-input { flex: 0 0 140px; }
-    .hint { display: block; font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; }
+    .hint { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; }
 
     .form-actions { display: flex; justify-content: flex-end; padding-top: 1rem; }
     .btn-primary { 
@@ -139,20 +139,20 @@ import { AuthService } from '../../core/services/auth.service';
     .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
     /* List Section */
-    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
     .section-header h3 { font-size: 1.1rem; color: #334155; margin: 0; font-weight: 600; }
-    .count-badge { background: #f1f5f9; color: #64748b; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.8rem; font-weight: 500; }
+    .count-badge { background: #f1f5f9; color: var(--text-secondary); padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.8rem; font-weight: 500; }
 
     .announcements-list { display: flex; flex-direction: column; gap: 1rem; }
 
     .announce-card { 
-      background: white; padding: 1.5rem; border-radius: 8px;
-      border: 1px solid #e2e8f0; transition: all 0.2s;
+      background: var(--surface); padding: 1.5rem; border-radius: 8px;
+      border: 1px solid var(--border); transition: all 0.2s;
     }
-    .announce-card:hover { border-color: #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .announce-card:hover { border-color: var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
-    .card-title { margin: 0; font-size: 1.1rem; color: #1e293b; font-weight: 600; }
+    .card-title { margin: 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 600; }
     
     .btn-icon { background: transparent; border: none; cursor: pointer; opacity: 0.4; transition: opacity 0.2s; font-size: 1rem; }
     .btn-icon:hover { opacity: 1; }
@@ -163,9 +163,9 @@ import { AuthService } from '../../core/services/auth.service';
     .card-meta { display: flex; flex-wrap: wrap; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #f8fafc; }
     .meta-chip { font-size: 0.8rem; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: 500; }
     .meta-chip.deadline { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-    .meta-chip.date { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; margin-left: auto; }
+    .meta-chip.date { background: var(--background); color: var(--text-secondary); border: 1px solid var(--border); margin-left: auto; }
 
-    .empty-state { text-align: center; padding: 4rem; color: #64748b; background: white; border-radius: 12px; border: 1px dashed #cbd5e1; }
+    .empty-state { text-align: center; padding: 4rem; color: var(--text-secondary); background: var(--surface); border-radius: 12px; border: 1px dashed var(--border); }
     .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.6; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }
@@ -180,7 +180,7 @@ import { AuthService } from '../../core/services/auth.service';
       .date-time-row { flex-direction: column; gap: 0.75rem; }
       .glass-input[type="date"], .glass-input[type="time"] { 
         min-height: 48px; 
-        color: #1e293b !important;
+        color: var(--text-primary) !important;
         -webkit-appearance: listbox; /* Forces native mobile UI display */
       }
       .time-input { flex: none; width: 100%; }

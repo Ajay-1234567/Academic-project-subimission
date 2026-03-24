@@ -58,7 +58,7 @@ import { ApiService } from '../../core/services/api.service';
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; max-width: 1000px; }
-    h2 { margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 800; color: #1e293b; }
+    h2 { margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
     .profile-card { overflow: visible; position: relative; padding-bottom: 2rem; }
     .header-bg { height: 120px; background: linear-gradient(to right, var(--primary), var(--secondary)); opacity: 0.8; border-radius: 16px 16px 0 0; }
     .avatar-lg {

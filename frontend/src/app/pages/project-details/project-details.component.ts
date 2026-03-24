@@ -178,39 +178,39 @@ import { AuthService } from '../../core/services/auth.service';
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
 
-    .main-layout { margin-left: 250px; padding: 2.5rem; min-height: 100vh; background: #f8fafc; }
+    .main-layout { margin-left: 250px; padding: 2.5rem; min-height: 100vh; background: var(--background); }
     @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
 
-    .back-link { display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1.5rem; color: #64748b; text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 0.4rem 0.8rem; border-radius: 6px; background: white; border: 1px solid #e2e8f0; transition: all 0.2s; }
-    .back-link:hover { background: #f1f5f9; color: #1e293b; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 0.4rem 0.8rem; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); transition: all 0.2s; }
+    .back-link:hover { background: #f1f5f9; color: var(--text-primary); }
 
     /* Header */
     .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
     .header-left { flex: 1; }
     h1 { font-size: 1.9rem; font-weight: 800; color: #0f172a; margin: 0 0 0.75rem; line-height: 1.3; }
     .header-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .status-badge { padding: 0.3rem 0.75rem; border-radius: 99px; background: #fffbeb; color: #d97706; border: 1px solid #fcd34d; font-size: 0.8rem; font-weight: 600; }
+    .status-badge { padding: 0.3rem 0.75rem; border-radius: 99px; background: var(--surface)beb; color: #d97706; border: 1px solid #fcd34d; font-size: 0.8rem; font-weight: 600; }
     .status-badge.graded { background: #ecfdf5; color: #059669; border-color: #a7f3d0; }
     .type-badge { background: #ede9fe; color: #7c3aed; border: 1px solid #c4b5fd; font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 99px; }
-    .sem-badge { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 500; padding: 0.3rem 0.75rem; border-radius: 99px; }
+    .sem-badge { background: #f1f5f9; color: #475569; border: 1px solid var(--border); font-size: 0.78rem; font-weight: 500; padding: 0.3rem 0.75rem; border-radius: 99px; }
     .subj-badge { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 0.78rem; font-weight: 600; padding: 0.3rem 0.75rem; border-radius: 99px; }
 
     .header-actions { display: flex; gap: 0.75rem; align-items: flex-start; flex-shrink: 0; }
     .btn-edit-grade { background: #6366f1; color: white; border: none; padding: 0.65rem 1.4rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .btn-edit-grade:hover { background: #4f46e5; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
-    .btn-cancel { background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.65rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-cancel { background: var(--surface); border: 1px solid var(--border); color: #475569; padding: 0.65rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .btn-cancel:hover { background: #f1f5f9; }
 
     /* Card */
-    .glass-panel { background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .glass-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .p-6 { padding: 2rem; }
 
     /* Meta Info */
     .meta-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; padding-bottom: 1.75rem; border-bottom: 1px solid #f1f5f9; margin-bottom: 1.75rem; }
     .meta-item { display: flex; flex-direction: column; gap: 0.25rem; }
-    .meta-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: #94a3b8; }
-    .meta-val { color: #1e293b; font-weight: 600; font-size: 0.95rem; }
-    .email-badge { font-size: 0.75rem; background: #f1f5f9; color: #64748b; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; font-family: monospace; }
+    .meta-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-secondary); }
+    .meta-val { color: var(--text-primary); font-weight: 600; font-size: 0.95rem; }
+    .email-badge { font-size: 0.75rem; background: #f1f5f9; color: var(--text-secondary); padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; font-family: monospace; }
     .repo-link { color: #6366f1; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
     .repo-link:hover { text-decoration: underline; }
 
@@ -218,10 +218,10 @@ import { AuthService } from '../../core/services/auth.service';
 
     /* Abstract */
     .abstract-section { margin-bottom: 2rem; }
-    .abstract-section h3 { margin: 0 0 0.75rem; font-size: 1rem; font-weight: 700; color: #1e293b; }
+    .abstract-section h3 { margin: 0 0 0.75rem; font-size: 1rem; font-weight: 700; color: var(--text-primary); }
     .abstract-section p { line-height: 1.8; color: #475569; font-size: 0.95rem; }
 
-    .section-label { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 1rem; }
+    .section-label { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 0 0 1rem; }
 
     /* Grade Display */
     .grade-section { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f1f5f9; }
@@ -234,11 +234,11 @@ import { AuthService } from '../../core/services/auth.service';
     .score-total { font-size: 0.75rem; opacity: 0.8; }
     .feedback-box h4 { font-size: 0.85rem; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
     blockquote { font-style: italic; color: #475569; margin: 0 0 0.5rem; line-height: 1.6; font-size: 0.95rem; }
-    .feedback-box small { color: #94a3b8; }
+    .feedback-box small { color: var(--text-secondary); }
 
     /* GRADING FORM */
-    .grade-form-section { margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e2e8f0; }
-    .current-grade-ref { display: flex; align-items: center; gap: 0.75rem; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .grade-form-section { margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border); }
+    .current-grade-ref { display: flex; align-items: center; gap: 0.75rem; background: var(--surface)beb; border: 1px solid #fcd34d; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .ref-label { font-size: 0.8rem; color: #92400e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .ref-score { font-size: 1.2rem; font-weight: 800; color: #d97706; }
     .ref-feedback { font-size: 0.85rem; color: #92400e; font-style: italic; }
@@ -246,16 +246,16 @@ import { AuthService } from '../../core/services/auth.service';
     .form-group { margin-bottom: 1.5rem; }
     label { display: block; margin-bottom: 0.65rem; color: #334155; font-weight: 600; font-size: 0.9rem; }
     .req { color: #ef4444; }
-    .optional { color: #94a3b8; font-weight: 400; font-size: 0.82rem; }
-    .glass-input { width: 100%; padding: 0.85rem 1rem; background: white; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #1e293b; font-size: 1rem; box-sizing: border-box; transition: all 0.2s; }
+    .optional { color: var(--text-secondary); font-weight: 400; font-size: 0.82rem; }
+    .glass-input { width: 100%; padding: 0.85rem 1rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; box-sizing: border-box; transition: all 0.2s; }
     .glass-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
-    .glass-input::placeholder { color: #94a3b8; }
+    .glass-input::placeholder { color: var(--text-secondary); }
 
     .score-group { max-width: 280px; }
     .score-input-wrap { display: flex; align-items: center; gap: 0.75rem; }
     .score-input { flex: 1; font-weight: 700; font-size: 1.3rem; text-align: center; }
-    .score-suffix { font-size: 1rem; color: #94a3b8; font-weight: 600; white-space: nowrap; }
-    .score-bar-preview { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 0.75rem; }
+    .score-suffix { font-size: 1rem; color: var(--text-secondary); font-weight: 600; white-space: nowrap; }
+    .score-bar-preview { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: 0.75rem; }
     .score-fill-preview { height: 100%; border-radius: 99px; transition: width 0.3s ease, background 0.3s ease; }
     .score-fill-preview.high { background: linear-gradient(90deg, #10b981, #059669); }
     .score-fill-preview.mid { background: linear-gradient(90deg, #f59e0b, #d97706); }
@@ -264,16 +264,16 @@ import { AuthService } from '../../core/services/auth.service';
 
     .form-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid #f1f5f9; flex-wrap: wrap; gap: 1rem; }
     .grader-info { display: flex; align-items: center; gap: 0.5rem; }
-    .grader-label { font-size: 0.8rem; color: #94a3b8; }
-    .grader-name { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+    .grader-label { font-size: 0.8rem; color: var(--text-secondary); }
+    .grader-name { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
     .role-chip { background: #ede9fe; color: #7c3aed; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-primary { padding: 0.85rem 2rem; background: #6366f1; color: white; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; }
     .btn-primary:hover:not(:disabled) { background: #4f46e5; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    .student-info-box { margin-top: 2rem; padding: 1rem 1.5rem; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px; color: #92400e; font-size: 0.9rem; }
-    .loading, .error-state { text-align: center; padding: 4rem; color: #64748b; }
-    .error-state h2 { color: #1e293b; margin-bottom: 1rem; }
+    .student-info-box { margin-top: 2rem; padding: 1rem 1.5rem; background: var(--surface)beb; border: 1px solid #fcd34d; border-radius: 10px; color: #92400e; font-size: 0.9rem; }
+    .loading, .error-state { text-align: center; padding: 4rem; color: var(--text-secondary); }
+    .error-state h2 { color: var(--text-primary); margin-bottom: 1rem; }
     .error-state a { color: #6366f1; font-weight: 600; text-decoration: none; }
 
     input[type=number]::-webkit-inner-spin-button,
@@ -282,7 +282,7 @@ import { AuthService } from '../../core/services/auth.service';
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }
-    .admin-view-badge span { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; }
+    .admin-view-badge span { background: #f1f5f9; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; }
   `]
 })
 export class ProjectDetailsComponent implements OnInit {

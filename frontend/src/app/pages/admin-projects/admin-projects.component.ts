@@ -102,20 +102,20 @@ import { AuthService } from '../../core/services/auth.service';
     </div>
   `,
     styles: [`
-    .main-layout { margin-left: 250px; padding: 2.5rem; background: #f8fafc; min-height: 100vh; }
+    .main-layout { margin-left: 250px; padding: 2.5rem; background: var(--background); min-height: 100vh; }
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
-    h1 { font-size: 1.8rem; font-weight: 800; color: #1e293b; margin: 0; }
-    p { color: #64748b; margin: 0.2rem 0 0; }
-    .back-btn { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 1rem; color: #475569; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+    h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin: 0; }
+    p { color: var(--text-secondary); margin: 0.2rem 0 0; }
+    .back-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem; color: #475569; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
 
     .split-layout { display: grid; grid-template-columns: 380px 1fr; gap: 2rem; }
     @media (max-width: 1100px) { .split-layout { grid-template-columns: 1fr; } }
 
-    .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .form-card h3 { margin: 0 0 1.5rem; font-size: 1.1rem; color: #1e293b; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .form-card h3 { margin: 0 0 1.5rem; font-size: 1.1rem; color: var(--text-primary); }
     .form-group { margin-bottom: 1.25rem; }
     .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; color: #475569; }
-    .glass-input, .glass-textarea { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
+    .glass-input, .glass-textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
     .glass-textarea { resize: vertical; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .btn-primary { 
@@ -125,10 +125,10 @@ import { AuthService } from '../../core/services/auth.service';
     .btn-primary:hover:not(:disabled) { background: #4338ca; }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .list-section h3 { margin: 0 0 1.5rem; font-size: 1.1rem; color: #1e293b; }
+    .list-section h3 { margin: 0 0 1.5rem; font-size: 1.1rem; color: var(--text-primary); }
     .statements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
     .statement-card { 
-      background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; 
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; 
       display: flex; flex-direction: column; transition: transform 0.2s;
     }
     .statement-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
@@ -139,15 +139,15 @@ import { AuthService } from '../../core/services/auth.service';
     .diff-chip[data-diff="Advanced"] { background: #fef2f2; color: #dc2626; }
     .del-btn { background: transparent; border: none; cursor: pointer; opacity: 0.3; transition: opacity 0.2s; font-size: 1.1rem; }
     .del-btn:hover { opacity: 1; color: #dc2626; }
-    .statement-card h4 { margin: 0 0 0.75rem; font-size: 1.05rem; font-weight: 700; color: #1e293b; line-height: 1.3; }
+    .statement-card h4 { margin: 0 0 0.75rem; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
     .statement-card p { font-size: 0.88rem; color: #475569; line-height: 1.5; flex: 1; margin-bottom: 1.25rem; }
     .sc-footer { border-top: 1px solid #f1f5f9; padding-top: 1rem; }
     .sc-meta { display: flex; gap: 0.75rem; margin-bottom: 0.5rem; }
-    .sc-meta span { font-size: 0.75rem; color: #64748b; font-weight: 500; }
-    .sc-assignee { font-size: 0.78rem; color: #94a3b8; }
+    .sc-meta span { font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
+    .sc-assignee { font-size: 0.78rem; color: var(--text-secondary); }
     .sc-assignee strong { color: #6366f1; }
 
-    .loading, .empty-state { text-align: center; padding: 3rem; color: #94a3b8; font-style: italic; }
+    .loading, .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); font-style: italic; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }
   `]

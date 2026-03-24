@@ -183,33 +183,33 @@ import { Router, RouterLink } from '@angular/router';
     /* RIGHT PANEL */
     .right-panel {
       flex: 1;
-      background: #f8fafc;
+      background: var(--background);
       display: flex; align-items: center; justify-content: center;
       padding: 2rem;
     }
     .form-card {
       width: 100%; max-width: 420px;
-      background: white; border-radius: 20px;
+      background: var(--surface); border-radius: 20px;
       padding: 2.5rem;
       box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
     }
     .form-header { margin-bottom: 1.8rem; }
     .form-header h1 { font-size: 1.7rem; font-weight: 800; color: #0f172a; margin-bottom: 0.4rem; }
-    .form-header p { color: #64748b; font-size: 0.9rem; }
+    .form-header p { color: var(--text-secondary); font-size: 0.9rem; }
 
     /* Role Tabs */
     .role-tabs {
       display: flex; background: #f1f5f9; padding: 4px; border-radius: 10px;
-      margin-bottom: 1.8rem; border: 1px solid #e2e8f0;
+      margin-bottom: 1.8rem; border: 1px solid var(--border);
     }
     .role-tabs button {
       flex: 1; background: transparent; border: none; padding: 0.55rem 0.5rem;
       border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.82rem;
-      color: #64748b; transition: all 0.2s;
+      color: var(--text-secondary); transition: all 0.2s;
     }
     .role-tabs button.active {
-      background: white; color: #6366f1; font-weight: 700;
+      background: var(--surface); color: #6366f1; font-weight: 700;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
@@ -219,11 +219,11 @@ import { Router, RouterLink } from '@angular/router';
     .field {
       width: 100%; padding: 0.75rem 1rem;
       border: 1.5px solid #d1d5db; border-radius: 10px;
-      font-size: 0.95rem; color: #1e293b; background: white;
+      font-size: 0.95rem; color: var(--text-primary); background: var(--surface);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .field:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
-    .field::placeholder { color: #94a3b8; }
+    .field::placeholder { color: var(--text-secondary); }
 
     .error-alert {
       display: flex; align-items: flex-start; gap: 0.5rem;
@@ -245,11 +245,11 @@ import { Router, RouterLink } from '@angular/router';
 
     .form-footer {
       display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-      margin-top: 1.5rem; font-size: 0.875rem; color: #64748b;
+      margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-secondary);
     }
     .form-footer a { color: #6366f1; font-weight: 600; text-decoration: none; }
     .form-footer a:hover { text-decoration: underline; }
-    .back-home { color: #94a3b8 !important; font-weight: 500 !important; font-size: 0.85rem; }
+    .back-home { color: var(--text-secondary) !important; font-weight: 500 !important; font-size: 0.85rem; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.4s ease; }

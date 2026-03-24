@@ -111,29 +111,29 @@ import { AuthService } from '../../core/services/auth.service';
     </div>
   `,
   styles: [`
-    .main-layout { margin-left: 250px; padding: 2rem; min-height: 100vh; background: #f8fafc; }
+    .main-layout { margin-left: 250px; padding: 2rem; min-height: 100vh; background: var(--background); }
     @media (max-width: 1024px) { .main-layout { margin-left: 0; padding: 5rem 1.25rem 2rem; } }
 
     .header { margin: 0 auto 2rem; max-width: 800px; }
-    h1 { font-size: 2rem; font-weight: 700; color: #1e293b; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+    h1 { font-size: 2rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 0.5rem; }
     p { color: #475569; font-size: 1rem; margin: 0; }
 
     .center-container { display: flex; justify-content: center; }
-    .form-card { width: 100%; max-width: 800px; padding: 2.5rem; background: white; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-radius: 16px; }
+    .form-card { width: 100%; max-width: 800px; padding: 2.5rem; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-radius: 16px; }
 
     /* Type Selector */
     .type-selector { margin-bottom: 2rem; }
     .type-label { display: block; margin-bottom: 0.75rem; color: #475569; font-weight: 600; font-size: 0.9rem; }
     .type-tabs { display: flex; gap: 1rem; }
     .type-tabs button {
-      flex: 1; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px;
-      background: white; color: #64748b; font-size: 0.95rem; font-weight: 500;
+      flex: 1; padding: 1rem; border: 2px solid var(--border); border-radius: 12px;
+      background: var(--surface); color: var(--text-secondary); font-size: 0.95rem; font-weight: 500;
       cursor: pointer; transition: all 0.2s; text-align: left;
     }
     .type-tabs button:hover:not(:disabled) { border-color: #a5b4fc; background: #f5f3ff; color: #4f46e5; }
     .type-tabs button.active { border-color: #6366f1; background: #f5f3ff; color: #4f46e5; font-weight: 700; }
     .type-tabs button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .no-group-hint { font-size: 0.78rem; color: #94a3b8; font-weight: 400; display: block; margin-top: 0.2rem; }
+    .no-group-hint { font-size: 0.78rem; color: var(--text-secondary); font-weight: 400; display: block; margin-top: 0.2rem; }
 
     /* Group Banner */
     .group-banner { background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border: 1px solid #a7f3d0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
@@ -142,24 +142,24 @@ import { AuthService } from '../../core/services/auth.service';
     .gb-title { font-weight: 700; color: #065f46; font-size: 1rem; }
     .gb-sub { font-size: 0.82rem; color: #059669; margin-top: 0.15rem; }
     .gb-members { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .gb-member { display: flex; align-items: center; gap: 0.4rem; background: white; border: 1px solid #d1fae5; border-radius: 99px; padding: 0.3rem 0.7rem; font-size: 0.82rem; color: #065f46; font-weight: 500; }
+    .gb-member { display: flex; align-items: center; gap: 0.4rem; background: var(--surface); border: 1px solid #d1fae5; border-radius: 99px; padding: 0.3rem 0.7rem; font-size: 0.82rem; color: #065f46; font-weight: 500; }
     .gb-avatar { width: 20px; height: 20px; border-radius: 50%; background: #6ee7b7; color: #065f46; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.65rem; }
-    .already-submitted-warn { margin-top: 0.75rem; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 0.6rem 0.85rem; font-size: 0.82rem; color: #92400e; }
+    .already-submitted-warn { margin-top: 0.75rem; background: var(--surface)beb; border: 1px solid #fcd34d; border-radius: 8px; padding: 0.6rem 0.85rem; font-size: 0.82rem; color: #92400e; }
 
     .form-group { margin-bottom: 1.75rem; }
     label { display: block; margin-bottom: 0.6rem; color: #334155; font-weight: 600; font-size: 0.9rem; }
     .req { color: #ef4444; }
-    .glass-input { width: 100%; padding: 0.85rem 1rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; color: #1e293b; font-size: 1rem; transition: all 0.2s; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .glass-input { width: 100%; padding: 0.85rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-size: 1rem; transition: all 0.2s; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .glass-input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
-    .glass-input::placeholder { color: #94a3b8; }
-    .hint { color: #64748b; font-size: 0.85rem; margin-top: 0.5rem; display: block; }
+    .glass-input::placeholder { color: var(--text-secondary); }
+    .hint { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem; display: block; }
 
     .actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9; }
     .btn-primary { padding: 0.85rem 2.5rem; background: #6366f1; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 1rem; }
     .btn-primary:hover { background: #4f46e5; transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .btn-outline { padding: 0.85rem 1.5rem; background: white; border: 1px solid #cbd5e1; color: #475569; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
-    .btn-outline:hover { background: #f8fafc; color: #1e293b; border-color: #94a3b8; }
+    .btn-outline { padding: 0.85rem 1.5rem; background: var(--surface); border: 1px solid var(--border); color: #475569; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+    .btn-outline:hover { background: var(--background); color: var(--text-primary); border-color: var(--text-secondary); }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }

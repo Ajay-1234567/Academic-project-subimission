@@ -200,7 +200,7 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     </div>
   `,
   styles: [`
-    .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
+    .main-layout { margin-left: 250px; padding: 2rem; background: var(--background); min-height: 100vh; }
 
     /* Header */
     .page-header { 
@@ -208,23 +208,23 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
       margin-bottom: 3rem; flex-wrap: wrap; gap: 2rem; 
     }
     .header-content { flex: 1; min-width: 300px; }
-    h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; letter-spacing: -0.5px; }
-    .page-header p { color: #64748b; margin: 0 0 0.5rem; font-size: 1rem; }
+    h1 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0 0 0.5rem; letter-spacing: -0.5px; }
+    .page-header p { color: var(--text-secondary); margin: 0 0 0.5rem; font-size: 1rem; }
     
     .header-stats { display: flex; gap: 1rem; }
     .stat-chip { 
-      text-align: center; padding: 0.5rem 1rem; background: white;
-      border: 1px solid #e2e8f0; border-radius: 8px; 
+      text-align: center; padding: 0.5rem 1rem; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px; 
       min-width: 100px;
     }
     .stat-num { display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
-    .stat-lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+    .stat-lbl { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
 
     /* Form Card */
     .form-card { 
       padding: 2.5rem; margin-bottom: 2rem; 
-      background: white; border-radius: 12px;
-      border: 1px solid #e2e8f0;
+      background: var(--surface); border-radius: 12px;
+      border: 1px solid var(--border);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
     .form-title { margin: 0 0 1.5rem; color: var(--primary); font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -234,16 +234,16 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     .req { color: #ef4444; }
     
     .glass-input { 
-      width: 100%; padding: 0.75rem 1rem; background: #fff;
-      border: 1px solid #cbd5e1; border-radius: 6px;
-      color: #1e293b; font-size: 0.95rem; box-sizing: border-box; 
+      width: 100%; padding: 0.75rem 1rem; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text-primary); font-size: 0.95rem; box-sizing: border-box; 
       transition: all 0.2s;
     }
     .glass-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-    .glass-input::placeholder { color: #94a3b8; }
+    .glass-input::placeholder { color: var(--text-secondary); }
     .glass-select { background-image: none; cursor: pointer; }
     
-    .readonly-field { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
+    .readonly-field { background-color: #f1f5f9; color: var(--text-secondary); cursor: not-allowed; border-color: var(--border); }
     .full-width { grid-column: 1 / -1; }
 
     .form-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
@@ -257,7 +257,7 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
     
     .btn-outline {
-      padding: 0.75rem 1.5rem; background: white; border: 1px solid #cbd5e1;
+      padding: 0.75rem 1.5rem; background: var(--surface); border: 1px solid var(--border);
       color: #475569; border-radius: 6px; cursor: pointer; font-weight: 500;
     }
     .btn-outline:hover { background: #f1f5f9; color: #0f172a; }
@@ -269,24 +269,24 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     .search-wrapper { 
       flex: 1; position: relative; max-width: 500px; 
     }
-    .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: #94a3b8; }
+    .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: var(--text-secondary); }
     .search-input { 
       width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; 
-      background: white; border: 1px solid #e2e8f0; border-radius: 8px;
-      color: #1e293b; font-size: 0.95rem; 
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-primary); font-size: 0.95rem; 
     }
     .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-    .results-count { color: #64748b; font-size: 0.9rem; }
+    .results-count { color: var(--text-secondary); font-size: 0.9rem; }
 
     /* Grid */
     .students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
 
     .student-card { 
-      background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
       padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s;
       display: flex; flex-direction: column;
     }
-    .student-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-color: #cbd5e1; }
+    .student-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-color: var(--border); }
 
     .card-top { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
     .avatar { 
@@ -296,12 +296,12 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
       font-weight: 700; font-size: 1.2rem; flex-shrink: 0; 
     }
     .student-info { flex: 1; overflow: hidden; }
-    .student-info h4 { margin: 0 0 0.2rem; font-size: 1rem; color: #1e293b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .username { font-size: 0.85rem; color: #64748b; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .student-info h4 { margin: 0 0 0.2rem; font-size: 1rem; color: var(--text-primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .username { font-size: 0.85rem; color: var(--text-secondary); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .card-menu { display: flex; gap: 0.25rem; }
     .btn-icon { 
-      background: transparent; border: none; color: #94a3b8; 
+      background: transparent; border: none; color: var(--text-secondary); 
       width: 28px; height: 28px; border-radius: 4px; cursor: pointer; 
       display: flex; align-items: center; justify-content: center; font-size: 1rem;
     }
@@ -310,38 +310,38 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
 
     .info-row { 
       display: flex; gap: 1rem; margin-bottom: 1rem; 
-      background: #f8fafc; padding: 0.75rem; border-radius: 8px; border: 1px solid #f1f5f9;
+      background: var(--background); padding: 0.75rem; border-radius: 8px; border: 1px solid #f1f5f9;
     }
     .info-item { display: flex; flex-direction: column; }
-    .info-item .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; }
+    .info-item .label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
     .info-item .val { font-size: 0.85rem; color: #334155; font-weight: 500; }
 
     .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
     .tag { padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; }
     .subj-tag { background: rgba(16,185,129,0.2); color: #059669; }
-    .no-tag { background: rgba(255,255,255,0.05); color: #64748b; font-style: italic; }
+    .no-tag { background: rgba(255,255,255,0.05); color: var(--text-secondary); font-style: italic; }
 
     .card-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid #f1f5f9; }
     .email-badge { 
-      display: inline-block; font-size: 0.8rem; color: #64748b; 
+      display: inline-block; font-size: 0.8rem; color: var(--text-secondary); 
       background: #f1f5f9; padding: 0.25rem 0.6rem; border-radius: 4px;
       font-family: monospace; 
     }
 
-    .empty-state { text-align: center; padding: 4rem; color: #64748b; }
+    .empty-state { text-align: center; padding: 4rem; color: var(--text-secondary); }
     .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
-    .empty-state h3 { color: #1e293b; margin-bottom: 0.5rem; }
-    .loading-state { text-align: center; padding: 3rem; color: #64748b; }
+    .empty-state h3 { color: var(--text-primary); margin-bottom: 0.5rem; }
+    .loading-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
 
     /* Checkboxes */
     .subject-selection { 
       display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; 
-      max-height: 150px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.5rem; background: #fff;
+      max-height: 150px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; background: var(--surface);
     }
     .checkbox-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
     .checkbox-item input { margin: 0; }
-    .no-subjs { font-size: 0.85rem; color: #94a3b8; font-style: italic; padding: 0.5rem; }
-    .text-muted { color: #94a3b8; font-size: 0.8rem; }
+    .no-subjs { font-size: 0.85rem; color: var(--text-secondary); font-style: italic; padding: 0.5rem; }
+    .text-muted { color: var(--text-secondary); font-size: 0.8rem; }
     .selected-summary { font-size: 0.8rem; color: var(--primary); margin-top: 0.4rem; font-weight: 500; }
 
     @media (max-width: 1024px) {

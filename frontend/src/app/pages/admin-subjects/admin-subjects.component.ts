@@ -89,26 +89,26 @@ import { ApiService } from '../../core/services/api.service';
     </div>
   `,
     styles: [`
-    .main-layout { margin-left: 250px; padding: 2.5rem; background: #f8fafc; min-height: 100vh; }
+    .main-layout { margin-left: 250px; padding: 2.5rem; background: var(--background); min-height: 100vh; }
     .page-header { margin-bottom: 2rem; }
     h1 { font-size: 2rem; font-weight: 800; color: #0f172a; margin: 0; }
-    p { color: #64748b; margin-top: 0.5rem; }
+    p { color: var(--text-secondary); margin-top: 0.5rem; }
 
     .content-grid { display: flex; flex-direction: column; gap: 2rem; }
-    .glass-panel { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .glass-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 
     .filter-card { display: flex; gap: 2rem; flex-wrap: wrap; }
     .filter-group { flex: 1; min-width: 200px; }
     .filter-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem; }
 
-    .glass-input { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; }
+    .glass-input { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; }
     
     .list-header { margin-bottom: 1.5rem; }
-    .list-header h3 { margin: 0; font-size: 1.25rem; color: #1e293b; }
+    .list-header h3 { margin: 0; font-size: 1.25rem; color: var(--text-primary); }
 
     .table-container { overflow-x: auto; }
     .w-full { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 1rem; border-bottom: 2px solid #f1f5f9; font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 700; }
+    th { text-align: left; padding: 1rem; border-bottom: 2px solid #f1f5f9; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; }
     td { padding: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; color: #334155; }
 
     .subj-name-cell { display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
@@ -123,7 +123,7 @@ import { ApiService } from '../../core/services/api.service';
     .btn-icon:hover { transform: scale(1.1); background: #fee2e2; }
     .delete { color: #ef4444; }
 
-    .loading, .empty-state { text-align: center; padding: 3rem; color: #64748b; }
+    .loading, .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.3s ease; }
