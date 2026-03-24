@@ -21,10 +21,10 @@ const BRANCH_DATA = [
 const ACADEMIC_YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 const GRAD_YEAR_MAP: { [key: string]: string } = {
-  '1st Year': '2028',
-  '2nd Year': '2027',
-  '3rd Year': '2026',
-  '4th Year': '2025'
+  '1st Year': '2030',
+  '2nd Year': '2029',
+  '3rd Year': '2027',
+  '4th Year': '2026'
 };
 
 @Component({
@@ -37,7 +37,7 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
 
       <header class="page-header">
         <div class="header-content">
-          <h1>My Students</h1>
+          <h1>My Students <small style="font-size: 0.5em; opacity: 0.5;">v1.2</small></h1>
           <p>Add and manage students assigned to you</p>
         </div>
         <div class="header-stats">
@@ -103,7 +103,12 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
               <option value="">{{ availableSections.length === 0 ? 'No Sections Available' : 'Select Section' }}</option>
               <option *ngFor="let s of availableSections" [value]="s.name">{{ s.name }}</option>
             </select>
-            <small class="help-text" *ngIf="availableSections.length === 0 && form.branch">Admin must configure sections for this branch{{ form.domain ? ' and domain' : '' }}.</small>
+            <small class="help-text" *ngIf="availableSections.length === 0 && form.branch">
+              Searching for <b>{{ form.academicYear }}</b> (Grad: {{ getGradYear() }}) 
+              in <b>{{ form.branch }}</b> 
+              with domain <b>{{ form.domain || 'General' }}</b>... 
+              <br>Admin must configure sections matching these exact values.
+            </small>
           </div>
           <div class="form-group">
             <label>Roll Number</label>
@@ -497,15 +502,29 @@ export class FacultyStudentsComponent implements OnInit {
   onYearOrBranchChange() {
     this.form.section = '';
     this.availableSections = [];
+    this.searchStatus = '';
 
     if (this.form.branch && this.form.academicYear) {
-      const gradYear = GRAD_YEAR_MAP[this.form.academicYear];
+      const gradYear = this.getGradYear();
+      this.searchStatus = `Searching for ${this.form.academicYear} (Grad ${gradYear})...`;
+      
       this.apiService.getSections('B.Tech', gradYear, this.form.branch, this.form.domain).subscribe({
-        next: (data) => this.availableSections = data,
-        error: () => { }
+        next: (data) => {
+          this.availableSections = data;
+          this.searchStatus = data.length > 0 ? '' : 'No sections found for this combination.';
+        },
+        error: () => { 
+          this.searchStatus = 'Error connecting to server.';
+        }
       });
     }
   }
+
+  getGradYear(): string {
+    return GRAD_YEAR_MAP[this.form.academicYear] || 'Unknown';
+  }
+
+  searchStatus = '';
 
   showDomainDropdown(): boolean {
     return this.form.branch === 'Computer Science (CSE)';
