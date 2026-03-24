@@ -203,8 +203,10 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
                   </td>
                   <td><span class="roll-badge">{{ s.rollNumber || '—' }}</span></td>
                   <td>{{ s.branch || s.department || '—' }}</td>
-                  <td>
-                    <span class="subj-tag" *ngIf="s.subject">{{ s.subject }}</span>
+                  <td class="subjects-cell">
+                    <div class="subj-tags-wrap" *ngIf="s.subject">
+                      <span *ngFor="let subj of splitDisplaySubjects(s.subject)" class="subj-tag">{{ subj }}</span>
+                    </div>
                     <span *ngIf="!s.subject" class="no-data">—</span>
                   </td>
                   <td>
@@ -472,11 +474,18 @@ const SEMESTERS = ['1-1', '1-2', '2-1', '2-2', '3-1', '3-2', '4-1', '4-2'];
     .not-submitted-row td { background: var(--surface)df0; }
     .not-submitted-row:hover td { background: #fef9e7; }
 
-    .student-cell { display: flex; align-items: center; gap: 0.75rem; }
+    .student-cell { display: flex; align-items: center; gap: 0.75rem; min-width: 140px; }
     .student-name { font-weight: 600; color: var(--text-primary); }
     .student-email { font-size: 0.78rem; color: var(--text-secondary); }
     .roll-badge { background: #f1f5f9; color: #475569; padding: 0.2rem 0.5rem; border-radius: 4px; font-family: monospace; font-size: 0.82rem; }
-    .subj-tag { background: rgba(16,185,129,0.15); color: #059669; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.82rem; font-weight: 500; }
+    
+    .subjects-cell { min-width: 160px; }
+    .subj-tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .subj-tag { 
+      background: #ecfdf5; color: #059669; border: 1px solid #d1fae5; 
+      padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; 
+      font-weight: 600; white-space: nowrap; line-height: 1.2;
+    }
     .group-badge { background: #ede9fe; color: #7c3aed; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.82rem; font-weight: 600; }
     .no-data { color: var(--text-secondary); font-style: italic; }
     .text-center { text-align: center; }
@@ -830,6 +839,11 @@ export class FacultyDashboardComponent implements OnInit {
       );
     }
     this.filteredSubmissions = base;
+  }
+
+  splitDisplaySubjects(subjStr: string): string[] {
+    if (!subjStr) return [];
+    return subjStr.split(',').map(s => s.trim()).filter(Boolean);
   }
 
   formatSemester(sem: string): string {
