@@ -1225,11 +1225,14 @@ app.get('/sections', async (req, res) => {
             params.push(`%${branch.trim()}%`);
         }
         if (domain && domain !== 'None / General') {
+            // If user searches for a specific domain, show that domain OR general sections
             query += ' AND (LOWER(domain) = LOWER(?) OR domain IS NULL OR domain = "" OR domain = "None / General")';
             params.push(domain.toString().trim());
-        } else if (!domain || domain === 'None / General') {
+        } else if (domain === 'None / General') {
+            // Explicitly searching for general only
             query += ' AND (domain IS NULL OR domain = "" OR domain = "None / General")';
         }
+        // If domain is NOT provided (like in Admin view), show EVERYTHING.
 
         const [rows] = await pool.query(query, params);
         res.json(rows);
