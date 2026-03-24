@@ -32,8 +32,18 @@ import { AuthService } from '../../core/services/auth.service';
           <div class="form-group deadline-group">
             <label>Deadline (Optional)</label>
             <div class="date-time-row">
-              <input [(ngModel)]="form.deadlineDate" type="date" class="glass-input">
-              <input [(ngModel)]="form.deadlineTime" type="time" class="glass-input time-input">
+              <input [(ngModel)]="form.deadlineDate" 
+                     type="text" 
+                     placeholder="Select Date"
+                     onfocus="(this.type='date')" 
+                     onblur="if(!this.value)this.type='text'"
+                     class="glass-input">
+              <input [(ngModel)]="form.deadlineTime" 
+                     type="text" 
+                     placeholder="Select Time"
+                     onfocus="(this.type='date' ? this.type='time' : this.type='time')"
+                     onblur="if(!this.value)this.type='text'"
+                     class="glass-input time-input">
             </div>
             <span class="hint">Defaults to 23:59 if time is not set.</span>
           </div>
