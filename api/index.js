@@ -39,7 +39,7 @@ app.use(async (req, res, next) => {
     }
 });
 
-// --- DASHBOARD HEALTH MONITOR ---
+// --- DASHBOARD HEALTH MONITOR v1.5 [STABLE] ---
 // Automatically parse DB URL if user pasted the entire link on Vercel
 const rawUrl = process.env.MYSQL_URL || process.env.DATABASE_URL;
 let urlData = null;
