@@ -340,7 +340,8 @@ export class LoginComponent implements OnInit {
         } else if (err.status === 401) {
            this.errorMessage = 'Invalid email or password. Please try again.';
         } else {
-           this.errorMessage = err.error?.message || err.error?.error || 'An unexpected error occurred during login.';
+           const body = err.error;
+           this.errorMessage = (typeof body === 'string') ? body : (body?.message || body?.error || 'An unexpected error occurred during login.');
         }
         this.isLoading = false;
       }
