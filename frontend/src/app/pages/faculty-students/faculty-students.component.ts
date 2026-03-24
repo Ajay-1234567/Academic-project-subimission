@@ -36,7 +36,7 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
     <div class="main-layout fade-in">
 
       <header class="page-header">
-        <div>
+        <div class="header-content">
           <h1>My Students</h1>
           <p>Add and manage students assigned to you</p>
         </div>
@@ -201,12 +201,15 @@ const GRAD_YEAR_MAP: { [key: string]: string } = {
   `,
   styles: [`
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
-     }
 
     /* Header */
-    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+    .page-header { 
+      display: flex; justify-content: space-between; align-items: flex-start; 
+      margin-bottom: 3rem; flex-wrap: wrap; gap: 2rem; 
+    }
+    .header-content { flex: 1; min-width: 300px; }
     h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; letter-spacing: -0.5px; }
-    .page-header p { color: #64748b; margin: 0; font-size: 1rem; }
+    .page-header p { color: #64748b; margin: 0 0 0.5rem; font-size: 1rem; }
     
     .header-stats { display: flex; gap: 1rem; }
     .stat-chip { 

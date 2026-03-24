@@ -14,7 +14,7 @@ import { AuthService } from '../../core/services/auth.service';
     <div class="main-layout fade-in">
 
       <header class="page-header">
-        <div>
+        <div class="header-content">
           <h1>Announcements</h1>
           <p>Send deadline reminders and notices to all students</p>
         </div>
@@ -93,7 +93,11 @@ import { AuthService } from '../../core/services/auth.service';
     .main-layout { margin-left: 250px; padding: 2rem; background: #f8fafc; min-height: 100vh; }
 
     /* Header */
-    .page-header { margin-bottom: 2rem; }
+    .page-header { 
+      display: flex; justify-content: space-between; align-items: flex-start; 
+      margin-bottom: 3rem; flex-wrap: wrap; gap: 2rem; 
+    }
+    .header-content { flex: 1; min-width: 300px; }
     h1 { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; letter-spacing: -0.5px; }
     .page-header p { color: #64748b; margin: 0; font-size: 1rem; }
 
@@ -106,7 +110,7 @@ import { AuthService } from '../../core/services/auth.service';
     }
     .form-title { margin: 0 0 1.5rem; color: var(--primary); font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; }
 
-    .form-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 1.5rem; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
 
     .form-group { margin-bottom: 1.5rem; }
     label { display: block; margin-bottom: 0.5rem; color: #334155; font-size: 0.9rem; font-weight: 500; }
