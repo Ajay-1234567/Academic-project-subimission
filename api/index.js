@@ -861,7 +861,7 @@ app.post('/announcements', async (req, res) => {
                              <div class="meta" style="background: #eef2ff; border-color: #c7d2fe;">
                                 <h4 style="margin-top: 0; color: #3730a3;">${title}</h4>
                                 <p style="font-size: 15px; color: #312e81;">${message}</p>
-                                ${deadline ? `<hr style="margin: 16px 0; border-top-color: #c7d2fe;"><div class="meta-item"><span class="meta-label">📅 Deadline:</span> <b>${new Date(deadline.replace(' ', 'T')).toLocaleDateString('en-US', { dateStyle: 'long' })} (11:59 PM)</b></div>` : ''}
+                                ${deadline ? `<hr style="margin: 16px 0; border-top-color: #c7d2fe;"><div class="meta-item"><span class="meta-label">📅 Deadline:</span> <b>${new Date(deadline.replace(' ', 'T')).toLocaleDateString('en-US', { dateStyle: 'long' })}</b></div>` : ''}
                              </div>
                              
                              <p>Please log in to the portal for more details or to submit any required files.</p>`,
