@@ -213,7 +213,13 @@ const BRANCH_DATA = [
     .email-cell { color: #d97706; font-family: monospace; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 15vw; }
     .password-cell { font-family: monospace; color: var(--text-secondary); font-size: 0.82rem; white-space: nowrap; }
     
-    th:last-child, td:last-child { position: sticky; right: 0; background: var(--surface); z-index: 5; box-shadow: -4px 0 8px rgba(0,0,0,0.05); }
+    /* Sticky Actions ONLY on Desktop to prevent overlapping names on mobile */
+    @media (min-width: 1025px) {
+      th:last-child, td:last-child { 
+        position: sticky; right: 0; background: var(--surface); z-index: 5; 
+        box-shadow: -4px 0 8px rgba(0,0,0,0.05); 
+      }
+    }
     .action-buttons { display: flex; gap: 0.5rem; padding-left: 0.5rem; }
     .btn-icon {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
