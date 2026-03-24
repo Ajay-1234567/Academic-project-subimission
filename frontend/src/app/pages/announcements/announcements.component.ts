@@ -22,7 +22,15 @@ import { AuthService } from '../../core/services/auth.service';
 
       <!-- Create Form -->
       <div class="form-card">
-        <h3 class="form-title">Create New Announcement</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
+          <h3 class="form-title" style="margin: 0; border: none; padding: 0;">Create New Announcement</h3>
+          <div class="template-selector">
+            <select class="glass-input tiny-select" (change)="applyTemplate($event)">
+              <option value="">-- Quick Templates --</option>
+              <option *ngFor="let t of templates" [value]="t.title">{{ t.label }}</option>
+            </select>
+          </div>
+        </div>
         
         <div class="form-grid">
           <div class="form-group">
@@ -129,6 +137,7 @@ import { AuthService } from '../../core/services/auth.service';
     textarea.glass-input { resize: vertical; min-height: 100px; }
 
     .hint { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; }
+    .tiny-select { padding: 0.4rem 0.8rem; font-size: 0.85rem; width: auto; min-width: 180px; height: auto; cursor: pointer; }
 
     .form-actions { display: flex; justify-content: flex-end; padding-top: 1rem; }
     .btn-primary { 
@@ -202,12 +211,29 @@ export class AnnouncementsComponent implements OnInit {
   isSending = false;
 
   form = { title: '', message: '', deadlineDate: '' };
+  
+  templates = [
+    { label: '⏰ Submission Deadline', title: 'Final Project Submission', message: 'This is a reminder that the final project submission deadline is approaching. Please ensure all your files and repository links are correctly updated before the cutoff.' },
+    { label: '📊 Report Submission', title: 'Project Report Deadline', message: 'Please submit your comprehensive project report as per the template provided. Ensure all team members names and roll numbers are included correctly.' },
+    { label: '🎤 Viva Voce Schedule', title: 'Viva-Voce Presentation Schedule', message: 'The schedule for the project viva-voce has been finalized. Please check your assigned time slots and ensure your presentation is ready.' },
+    { label: '✏️ Revision Needed', title: 'Action Required: Project Revisions', message: 'Faculty has reviewed your latest submission. Some corrections are required in your abstract or methodology. Please check the feedback and resubmit soon.' }
+  ];
 
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
 
   ngOnInit() {
     this.loadAnnouncements();
+  }
+
+  applyTemplate(event: any) {
+    const title = event.target.value;
+    if (!title) return;
+    const template = this.templates.find(t => t.title === title);
+    if (template) {
+      this.form.title = template.title;
+      this.form.message = template.message;
+    }
   }
 
   loadAnnouncements() {
