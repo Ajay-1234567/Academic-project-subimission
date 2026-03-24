@@ -320,8 +320,9 @@ export class RegisterComponent {
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Registration failed. Please try a different email.';
-        this.isAlreadyRegistered = (err.status === 400 && err.error?.message?.includes('already registered'));
+        const body = err.error;
+        this.errorMessage = (typeof body === 'string') ? body : (body?.message || body?.error || 'Registration failed. Please try again.');
+        this.isAlreadyRegistered = (err.status === 400 && this.errorMessage.includes('already registered'));
         this.isLoading = false;
       }
     });
