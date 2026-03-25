@@ -90,7 +90,7 @@ import { forkJoin } from 'rxjs';
           <div class="banner-text">
             <strong>{{ activeAnnouncements[0].title }}</strong>
             <span *ngIf="activeAnnouncements[0].deadline">
-              — Deadline: <b>{{ activeAnnouncements[0].deadline | date:'mediumDate' }} at {{ activeAnnouncements[0].deadline | date:'shortTime' }}</b>
+              — Deadline: <b>{{ activeAnnouncements[0].deadline | date:'mediumDate':'UTC' }}</b>
             </span>
           </div>
           <div class="banner-actions">

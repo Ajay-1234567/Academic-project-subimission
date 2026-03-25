@@ -64,8 +64,8 @@ import { ApiService } from '../../core/services/api.service';
 
             <div *ngIf="a.deadline">
               <div class="deadline-header">
-                <span class="dl-label">⏰ Submission Deadline</span>
-                <strong class="dl-date">{{ a.deadline | date:'EEEE, MMMM d y · h:mm a' }}</strong>
+                <span class="dl-label">📅 Project Deadline</span>
+                <strong class="dl-date">{{ a.deadline | date:'MMMM d, y':'UTC' }}</strong>
               </div>
 
               <!-- Live Countdown -->
