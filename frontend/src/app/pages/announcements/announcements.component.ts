@@ -20,16 +20,19 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
       </header>
 
-      <!-- Create Form -->
+      <!-- Create/Edit Form -->
       <div class="form-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
-          <h3 class="form-title" style="margin: 0; border: none; padding: 0;">Create New Announcement</h3>
-          <div class="template-selector">
+          <h3 class="form-title" style="margin: 0; border: none; padding: 0;">
+            {{ editingId ? 'Edit Announcement' : 'Create New Announcement' }}
+          </h3>
+          <div class="template-selector" *ngIf="!editingId">
             <select class="glass-input tiny-select" (change)="applyTemplate($event)">
               <option value="">-- Quick Templates --</option>
               <option *ngFor="let t of templates" [value]="t.title">{{ t.label }}</option>
             </select>
           </div>
+          <button *ngIf="editingId" (click)="cancelEdit()" class="btn-cancel">Cancel Edit</button>
         </div>
         
         <div class="form-grid">
@@ -56,8 +59,8 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
         
         <div class="form-actions">
-          <button (click)="postAnnouncement()" class="btn-primary" [disabled]="isSending">
-            {{ isSending ? 'Sending...' : 'Send to All Students' }}
+          <button (click)="postAnnouncement()" class="btn-primary" [disabled]="isSending" [class.editing]="editingId">
+            {{ isSending ? 'Saving...' : (editingId ? 'Update Announcement' : 'Send to All Students') }}
           </button>
         </div>
       </div>
@@ -78,10 +81,13 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
 
         <div class="announcements-list" *ngIf="!isLoading && announcements.length > 0">
-          <div *ngFor="let a of announcements" class="announce-card">
+          <div *ngFor="let a of announcements" class="announce-card" [class.editing-card]="editingId === a.id">
             <div class="card-header">
               <h4 class="card-title">{{ a.title }}</h4>
-              <button (click)="deleteAnnouncement(a.id)" class="btn-icon delete" title="Delete">🗑️</button>
+              <div class="card-actions">
+                <button (click)="editAnnouncement(a)" class="btn-icon edit" title="Edit">✏️</button>
+                <button (click)="deleteAnnouncement(a.id)" class="btn-icon delete" title="Delete">🗑️</button>
+              </div>
             </div>
 
             <p class="msg">{{ a.message }}</p>
@@ -146,6 +152,14 @@ import { AuthService } from '../../core/services/auth.service';
     }
     .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
     .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+    .btn-primary.editing { background: #059669; }
+
+    .btn-cancel { 
+      background: #f1f5f9; color: #475569; border: 1px solid var(--border);
+      padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-cancel:hover { background: #e2e8f0; color: #1e293b; }
 
     /* List Section */
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
@@ -156,15 +170,18 @@ import { AuthService } from '../../core/services/auth.service';
 
     .announce-card { 
       background: var(--surface); padding: 1.5rem; border-radius: 8px;
-      border: 1px solid var(--border); transition: all 0.2s;
+      border: 1px solid var(--border); transition: all 0.3s ease;
     }
     .announce-card:hover { border-color: var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .announce-card.editing-card { border-color: #059669; background: #f0fdf4; box-shadow: 0 0 0 2px #05966933; }
 
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
     .card-title { margin: 0; font-size: 1.1rem; color: var(--text-primary); font-weight: 600; }
     
+    .card-actions { display: flex; gap: 0.5rem; }
     .btn-icon { background: transparent; border: none; cursor: pointer; opacity: 0.4; transition: opacity 0.2s; font-size: 1rem; }
     .btn-icon:hover { opacity: 1; }
+    .btn-icon.edit:hover { filter: drop-shadow(0 0 2px #4f46e5); }
     .btn-icon.delete:hover { filter: drop-shadow(0 0 2px red); }
 
     .msg { color: #475569; line-height: 1.6; margin: 0 0 1.2rem; font-size: 0.95rem; white-space: pre-wrap; }
@@ -206,6 +223,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class AnnouncementsComponent implements OnInit {
   announcements: any[] = [];
+  editingId: number | null = null;
   isLoading = false;
   isSending = false;
 
@@ -242,6 +260,23 @@ export class AnnouncementsComponent implements OnInit {
     });
   }
 
+  editAnnouncement(a: any) {
+    this.editingId = a.id;
+    this.form.title = a.title;
+    this.form.message = a.message;
+    if (a.deadline) {
+      this.form.deadlineDate = new Date(a.deadline).toISOString().split('T')[0];
+    } else {
+      this.form.deadlineDate = '';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit() {
+    this.editingId = null;
+    this.form = { title: '', message: '', deadlineDate: '' };
+  }
+
   postAnnouncement() {
     if (!this.form.title || !this.form.message) {
       alert('Please fill in title and message.');
@@ -250,29 +285,45 @@ export class AnnouncementsComponent implements OnInit {
     this.isSending = true;
     const user = this.authService.currentUser();
 
-    // Combine date into MySQL DATETIME format (YYYY-MM-DD 23:59:59)
     let deadline: string | null = null;
     if (this.form.deadlineDate) {
       deadline = `${this.form.deadlineDate} 23:59:59`;
     }
 
-    this.apiService.createAnnouncement({
+    const payload = {
       title: this.form.title,
       message: this.form.message,
       deadline,
       facultyId: user?.id,
       facultyName: user?.name
-    }).subscribe({
-      next: (newItem) => {
-        this.announcements.unshift(newItem);
-        this.form = { title: '', message: '', deadlineDate: '' };
-        this.isSending = false;
-      },
-      error: (err: any) => {
-        alert('Failed to send: ' + (err?.error?.message || 'Unknown error'));
-        this.isSending = false;
-      }
-    });
+    };
+
+    if (this.editingId) {
+      this.apiService.updateAnnouncement(this.editingId, payload).subscribe({
+        next: (updatedItem) => {
+          const idx = this.announcements.findIndex(a => a.id === this.editingId);
+          if (idx !== -1) this.announcements[idx] = updatedItem;
+          this.cancelEdit();
+          this.isSending = false;
+        },
+        error: (err: any) => {
+          alert('Failed to update: ' + (err?.error?.message || 'Unknown error'));
+          this.isSending = false;
+        }
+      });
+    } else {
+      this.apiService.createAnnouncement(payload).subscribe({
+        next: (newItem) => {
+          this.announcements.unshift(newItem);
+          this.form = { title: '', message: '', deadlineDate: '' };
+          this.isSending = false;
+        },
+        error: (err: any) => {
+          alert('Failed to send: ' + (err?.error?.message || 'Unknown error'));
+          this.isSending = false;
+        }
+      });
+    }
   }
 
   deleteAnnouncement(id: number) {

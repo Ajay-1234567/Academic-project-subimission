@@ -881,6 +881,21 @@ app.post('/announcements', async (req, res) => {
     }
 });
 
+app.put('/announcements/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, message, deadline } = req.body;
+    try {
+        await pool.query(
+            'UPDATE announcements SET title = ?, message = ?, deadline = ? WHERE id = ?',
+            [title, message, deadline || null, id]
+        );
+        const [updated] = await pool.query('SELECT * FROM announcements WHERE id = ?', [id]);
+        res.json(updated[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.delete('/announcements/:id', async (req, res) => {
     const { id } = req.params;
     try {

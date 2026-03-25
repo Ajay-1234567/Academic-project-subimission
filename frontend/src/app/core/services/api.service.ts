@@ -75,6 +75,10 @@ export class ApiService {
         return this.http.delete(`${this.apiUrl}/announcements/${id}`);
     }
 
+    updateAnnouncement(id: number, data: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}/announcements/${id}`, data);
+    }
+
     getFacultyStudents(facultyId: number): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/faculty/${facultyId}/students`);
     }
